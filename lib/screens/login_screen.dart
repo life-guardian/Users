@@ -95,8 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(reqBody),
     );
-    // print(response.statusCode);
-    // var jsonResponse = jsonDecode(response.body);
+    
     var jsonResponse = jsonDecode(response.body);
     var message = jsonResponse['message'];
     if (response.statusCode == 200) {

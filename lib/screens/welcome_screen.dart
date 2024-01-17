@@ -91,6 +91,8 @@ class WelcomeScreen extends StatelessWidget {
                   _register(context);
                 },
                 style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),),
                   foregroundColor: (themeData.brightness == Brightness.light)
                       ? const Color(0xff1E232C)
                       : Colors.white,

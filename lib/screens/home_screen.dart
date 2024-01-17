@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_app/large_widget/custom_card_widget.dart';
 import 'package:user_app/screens/features_screen.dart';
+import 'package:user_app/screens/operation_details.dart';
 import 'package:user_app/small_widgets/custom_text_widgets/custom_text_widget.dart';
 import 'package:user_app/transitions_animations/custom_page_transition.dart';
 
@@ -173,21 +174,33 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 Row(
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         children: [
-                          CustomCardWidget(
-                            width: 170,
-                            height: 170,
-                            color1: Color(0xffA9FFEA),
-                            color2: Color(0xff00B288),
-                            title: 'Programs & Events',
-                            desc: 'Nearby',
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                CustomSlideTransition(
+                                  direction: AxisDirection.left,
+                                  child: FeaturesScreen(
+                                      screenType: 'ProgramEvents',
+                                      token: widget.token),
+                                ),
+                              );
+                            },
+                            child: const CustomCardWidget(
+                              width: 170,
+                              height: 170,
+                              color1: Color(0xffA9FFEA),
+                              color2: Color(0xff00B288),
+                              title: 'Programs & Events',
+                              desc: 'Nearby',
+                            ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 11,
                           ),
-                          CustomCardWidget(
+                          const CustomCardWidget(
                             width: 170,
                             height: 120,
                             color1: Color(0xffFFA0BC),

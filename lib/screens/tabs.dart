@@ -8,6 +8,7 @@ import 'package:user_app/screens/user_account_details.dart';
 import 'package:user_app/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class TabsBottom extends StatefulWidget {
   const TabsBottom({super.key, required this.token});
@@ -26,6 +27,7 @@ class _TabsBottomState extends State<TabsBottom> {
     super.initState();
     getToken();
     getLocation();
+    globalToken = widget.token;
   }
 
   void getLocation() async {
@@ -47,7 +49,6 @@ class _TabsBottomState extends State<TabsBottom> {
   void getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final myToken = prefs.getString('token');
-    // print("Token in home Screen: $myToken");
   }
 
   void onSelectedTab(int index) {
@@ -59,6 +60,29 @@ class _TabsBottomState extends State<TabsBottom> {
   }
 
   void _logoutUser() async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(
+            color: Colors.grey,
+          ),
+        );
+      },
+    );
+
+    try {
+      var response = await http.get(
+        Uri.parse(loginUrl),
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer ${widget.token}'
+        },
+      );
+    } catch (error) {
+      print("Logout user exception: ${error.toString()}");
+    }
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('token');
     while (Navigator.canPop(context)) {

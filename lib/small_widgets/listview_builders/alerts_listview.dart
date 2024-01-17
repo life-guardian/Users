@@ -13,90 +13,103 @@ class AlertsListview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
-    return ListView.builder(
-      itemCount: list.length,
-      itemBuilder: (context, index) {
-        final alertData = list.elementAt(index);
-        return Card(
-          elevation: 3,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          color: Theme.of(context).colorScheme.secondary,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 20,
+    return list.isEmpty
+        ? Center(
+            child: Text(
+              'No data found, Sorry! 😔',
+              style: GoogleFonts.plusJakartaSans().copyWith(
+                  color: Colors.grey,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold),
             ),
-            child: Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        alertData.alertName.toString(),
-                        style: GoogleFonts.plusJakartaSans().copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Text(
-                        alertData.locality.toString(),
-                        style: GoogleFonts.plusJakartaSans().copyWith(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Text(
-                        DateFormat('dd/MM/yy').format(
-                            DateTime.parse(alertData.alertForDate.toString())),
-                        style: GoogleFonts.plusJakartaSans().copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: (themeData.brightness == Brightness.light)
-                              ? const Color.fromARGB(255, 224, 28, 14)
-                              : Theme.of(context).colorScheme.onBackground,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
+          )
+        : ListView.builder(
+            itemCount: list.length,
+            itemBuilder: (context, index) {
+              final alertData = list.elementAt(index);
+              return Card(
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                color: Theme.of(context).colorScheme.secondary,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 20,
                   ),
-                  Column(
-                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        alertData.alertSeverity.toString(),
-                        style: GoogleFonts.plusJakartaSans().copyWith(
-                          color: Colors.grey,
-                          fontSize: 12,
+                  child: Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              alertData.alertName.toString(),
+                              style: GoogleFonts.plusJakartaSans().copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              alertData.locality.toString(),
+                              style: GoogleFonts.plusJakartaSans().copyWith(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              DateFormat('dd/MM/yy').format(DateTime.parse(
+                                  alertData.alertForDate.toString())),
+                              style: GoogleFonts.plusJakartaSans().copyWith(
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    (themeData.brightness == Brightness.light)
+                                        ? const Color.fromARGB(255, 224, 28, 14)
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .onBackground,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(
-                        height: 31,
-                      ),
-                      Text(
-                        alertData.agencyName.toString(),
-                        style: GoogleFonts.plusJakartaSans().copyWith(
-                          color: Colors.grey,
-                          fontSize: 12,
+                        Column(
+                          // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              alertData.alertSeverity.toString(),
+                              style: GoogleFonts.plusJakartaSans().copyWith(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 31,
+                            ),
+                            Text(
+                              alertData.agencyName.toString(),
+                              style: GoogleFonts.plusJakartaSans().copyWith(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
+                ),
+              );
+            },
+          );
   }
 }

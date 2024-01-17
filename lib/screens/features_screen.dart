@@ -8,7 +8,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:user_app/api_urls/config.dart';
 import 'package:user_app/models/alerts.dart';
 import 'package:http/http.dart' as http;
+import 'package:user_app/models/nearby_events.dart';
 import 'package:user_app/small_widgets/listview_builders/alerts_listview.dart';
+import 'package:user_app/small_widgets/listview_builders/nearby_events_listview.dart';
 
 class FeaturesScreen extends StatefulWidget {
   const FeaturesScreen({
@@ -25,6 +27,9 @@ class FeaturesScreen extends StatefulWidget {
 
 class _FeaturesScreenState extends State<FeaturesScreen> {
   List<Alerts> alertsData = [];
+  List<NearbyEvents> nearbyEvents = [];
+  String filterText = 'Upcoming Nearby Events';
+
   Widget activeWidget = const Center(
     child: CircularProgressIndicator(
       color: Colors.grey,
@@ -41,7 +46,39 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
               activeWidget = AlertsListview(list: alertsData);
             })
           });
+    } else if (widget.screenType == 'ProgramEvents') {
+      getNearByEventsData().then((value) => {
+            setState(() {
+              nearbyEvents.addAll(value);
+              activeWidget = NearbyEventsListview(
+                list: nearbyEvents,
+                token: widget.token,
+              );
+            })
+          });
+    } else {}
+  }
+
+  Future<List<NearbyEvents>> getNearByEventsData() async {
+    var response = await http.get(
+      Uri.parse(nearbyEventsUrl),
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer ${widget.token}'
+      },
+    );
+
+    List<NearbyEvents> data = [];
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      for (var jsonData in jsonResponse) {
+        data.add(NearbyEvents.fromJson(jsonData));
+      }
     }
+
+    return data;
   }
 
   Future<List<Alerts>> getAlertsData() async {
@@ -180,15 +217,55 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(
-                    top: 15,
-                    left: 12,
-                    right: 12,
+                    top: 20,
+                    left: 15,
+                    right: 15,
                     bottom: 5,
                   ),
-                  child: activeWidget,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (widget.screenType == 'ProgramEvents')
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                filterText,
+                                style: GoogleFonts.plusJakartaSans().copyWith(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    if (filterText ==
+                                        'Upcoming Nearby Events') {
+                                      filterText = 'Registered Events';
+                                    } else {
+                                      filterText = 'Upcoming Nearby Events';
+                                    }
+                                  });
+                                },
+                                child: Image.asset(
+                                  'assets/logos/settings-sliders.png',
+                                  width: 24,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      const SizedBox(
+                        height: 21,
+                      ),
+                      Expanded(child: activeWidget),
+                    ],
+                  ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
