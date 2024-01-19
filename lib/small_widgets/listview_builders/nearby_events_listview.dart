@@ -52,45 +52,69 @@ class NearbyEventsListview extends StatelessWidget {
                   ),
                   color: Theme.of(context).colorScheme.secondary,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 20,
+                    padding: const EdgeInsets.only(
+                      left: 10,
+                      right: 10,
+                      top: 20,
+                      bottom: 5,
                     ),
                     child: Expanded(
-                      child: Row(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    eventData.eventName.toString(),
+                                    style:
+                                        GoogleFonts.plusJakartaSans().copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    eventData.agencyName!
+                                        .toUpperCase()
+                                        .toString(),
+                                    style:
+                                        GoogleFonts.plusJakartaSans().copyWith(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
                               Text(
-                                eventData.eventName.toString(),
+                                DateFormat('dd/MM/yy').format(DateTime.parse(
+                                    eventData.eventDate.toString())),
                                 style: GoogleFonts.plusJakartaSans().copyWith(
                                   fontWeight: FontWeight.bold,
+                                  color: (themeData.brightness ==
+                                          Brightness.light)
+                                      ? const Color.fromARGB(255, 224, 28, 14)
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onBackground,
                                   fontSize: 16,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                eventData.agencyName.toString(),
-                                style: GoogleFonts.plusJakartaSans().copyWith(
-                                  color: Colors.grey,
-                                  fontSize: 12,
                                 ),
                               ),
                             ],
                           ),
+                          const SizedBox(
+                            height: 11,
+                          ),
                           Text(
-                            DateFormat('dd/MM/yy').format(
-                                DateTime.parse(eventData.eventDate.toString())),
+                            'Tap to Register'.toUpperCase(),
                             style: GoogleFonts.plusJakartaSans().copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: (themeData.brightness == Brightness.light)
-                                  ? const Color.fromARGB(255, 224, 28, 14)
-                                  : Theme.of(context).colorScheme.onBackground,
-                              fontSize: 16,
+                              color: Color.fromARGB(255, 128, 127, 127),
+                              fontSize: 13,
                             ),
                           ),
                         ],

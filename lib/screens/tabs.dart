@@ -25,6 +25,7 @@ class _TabsBottomState extends State<TabsBottom> {
   @override
   void initState() {
     super.initState();
+
     getToken();
     getLocation();
     globalToken = widget.token;
@@ -44,6 +45,7 @@ class _TabsBottomState extends State<TabsBottom> {
       print(
           "Latitude: ${universalLat.toString()} , Longitude: ${universaLng.toString()}");
     }
+    // Navigator.of(context).pop();
   }
 
   void getToken() async {
@@ -59,7 +61,7 @@ class _TabsBottomState extends State<TabsBottom> {
     );
   }
 
-  void _logoutUser() async {
+  void showCircularProgressBar() {
     showDialog(
       context: context,
       builder: (context) {
@@ -70,6 +72,10 @@ class _TabsBottomState extends State<TabsBottom> {
         );
       },
     );
+  }
+
+  void _logoutUser() async {
+    showCircularProgressBar();
 
     try {
       var response = await http.get(

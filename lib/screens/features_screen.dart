@@ -60,13 +60,7 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
             })
           });
       getRegisteredEventsData().then((value) => {
-            setState(() {
-              registeredEvents.addAll(value);
-              activeWidget = RegisteredEventsListview(
-                list: registeredEvents,
-                token: widget.token,
-              );
-            })
+            registeredEvents.addAll(value),
           });
     }
   }

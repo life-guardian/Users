@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_app/large_widget/custom_card_widget.dart';
 import 'package:user_app/screens/features_screen.dart';
-import 'package:user_app/screens/operation_details.dart';
 import 'package:user_app/small_widgets/custom_text_widgets/custom_text_widget.dart';
 import 'package:user_app/transitions_animations/custom_page_transition.dart';
 
