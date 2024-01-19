@@ -10,6 +10,7 @@ import 'package:user_app/models/alerts.dart';
 import 'package:http/http.dart' as http;
 import 'package:user_app/models/nearby_events.dart';
 import 'package:user_app/models/registered_events.dart';
+import 'package:user_app/small_widgets/custom_screen_widgets/search_agency.dart';
 import 'package:user_app/small_widgets/listview_builders/alerts_listview.dart';
 import 'package:user_app/small_widgets/listview_builders/nearby_events_listview.dart';
 import 'package:user_app/small_widgets/listview_builders/registered_events_listview.dart';
@@ -62,6 +63,10 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
       getRegisteredEventsData().then((value) => {
             registeredEvents.addAll(value),
           });
+    } else if (widget.screenType == 'SearchAgency') {
+      activeWidget = SearchAgencyScreen(
+        token: widget.token,
+      );
     }
   }
 
@@ -232,20 +237,32 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
               ),
             ),
             const SizedBox(
-              height: 11,
+              height: 5,
+            ),
+            if (widget.screenType == 'SearchAgency')
+              Text(
+                'Search by agency or representative name, email',
+                style: GoogleFonts.rubik().copyWith(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
+                  color: const Color(0xff78746D),
+                ),
+              ),
+            const SizedBox(
+              height: 5,
             ),
             Expanded(
               child: Container(
-                decoration: const BoxDecoration(
-                  color: Color.fromARGB(240, 255, 255, 255),
-                  borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                    top: 20,
+                  padding: EdgeInsets.only(
+                    top: widget.screenType == 'SearchAgency' ? 0 : 20,
                     left: 15,
                     right: 15,
                     bottom: 5,
@@ -297,7 +314,9 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
                       const SizedBox(
                         height: 21,
                       ),
-                      Expanded(child: activeWidget),
+                      Expanded(
+                        child: activeWidget,
+                      ),
                     ],
                   ),
                 ),

@@ -31,8 +31,9 @@ class _TabsBottomState extends State<TabsBottom> {
     globalToken = widget.token;
   }
 
-  void getLocation() async {
+  Future<String> getLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
+
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
       print('Location Denied');
@@ -46,6 +47,7 @@ class _TabsBottomState extends State<TabsBottom> {
           "Latitude: ${universalLat.toString()} , Longitude: ${universaLng.toString()}");
     }
     // Navigator.of(context).pop();
+    return 'load screen';
   }
 
   void getToken() async {

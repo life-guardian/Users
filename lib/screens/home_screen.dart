@@ -237,13 +237,25 @@ class _HomeScreenState extends State<HomeScreen> {
                           const SizedBox(
                             height: 11,
                           ),
-                          const CustomCardWidget(
-                            width: 170,
-                            height: 170,
-                            color1: Color(0xffB1EEFF),
-                            color2: Color(0xff29BAE2),
-                            title: 'Search',
-                            desc: 'Agency details',
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                CustomSlideTransition(
+                                  direction: AxisDirection.left,
+                                  child: FeaturesScreen(
+                                      token: widget.token,
+                                      screenType: 'SearchAgency'),
+                                ),
+                              );
+                            },
+                            child: const CustomCardWidget(
+                              width: 170,
+                              height: 170,
+                              color1: Color(0xffB1EEFF),
+                              color2: Color(0xff29BAE2),
+                              title: 'Search',
+                              desc: 'Agency details',
+                            ),
                           ),
                         ],
                       ),
