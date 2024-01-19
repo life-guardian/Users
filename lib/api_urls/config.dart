@@ -15,5 +15,6 @@ var alertUrl = '$baseUrl/api/alert/showreceived/$universalLat/$universaLng';
 var nearbyEventsUrl =
     '$baseUrl/api/event/nearbyevents/$universalLat/$universaLng';
 var eventDetailsUrl = '$baseUrl/api/event/eventdetails/';
+var userRegeteredEventsUrl = '$baseUrl/api/event/registeredevents';
 
 var googleMapsApiKey = 'AIzaSyCSpvganhtdZCMngmIVVuGFxr_tE533K4s';

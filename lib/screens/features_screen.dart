@@ -9,8 +9,10 @@ import 'package:user_app/api_urls/config.dart';
 import 'package:user_app/models/alerts.dart';
 import 'package:http/http.dart' as http;
 import 'package:user_app/models/nearby_events.dart';
+import 'package:user_app/models/registered_events.dart';
 import 'package:user_app/small_widgets/listview_builders/alerts_listview.dart';
 import 'package:user_app/small_widgets/listview_builders/nearby_events_listview.dart';
+import 'package:user_app/small_widgets/listview_builders/registered_events_listview.dart';
 
 class FeaturesScreen extends StatefulWidget {
   const FeaturesScreen({
@@ -28,6 +30,7 @@ class FeaturesScreen extends StatefulWidget {
 class _FeaturesScreenState extends State<FeaturesScreen> {
   List<Alerts> alertsData = [];
   List<NearbyEvents> nearbyEvents = [];
+  List<RegisteredEvents> registeredEvents = [];
   String filterText = 'Upcoming Nearby Events';
 
   Widget activeWidget = const Center(
@@ -56,7 +59,16 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
               );
             })
           });
-    } else {}
+      getRegisteredEventsData().then((value) => {
+            setState(() {
+              registeredEvents.addAll(value);
+              activeWidget = RegisteredEventsListview(
+                list: registeredEvents,
+                token: widget.token,
+              );
+            })
+          });
+    }
   }
 
   Future<List<NearbyEvents>> getNearByEventsData() async {
@@ -75,6 +87,28 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
 
       for (var jsonData in jsonResponse) {
         data.add(NearbyEvents.fromJson(jsonData));
+      }
+    }
+
+    return data;
+  }
+
+  Future<List<RegisteredEvents>> getRegisteredEventsData() async {
+    var response = await http.get(
+      Uri.parse(userRegeteredEventsUrl),
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer ${widget.token}'
+      },
+    );
+
+    List<RegisteredEvents> data = [];
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      for (var jsonData in jsonResponse) {
+        data.add(RegisteredEvents.fromJson(jsonData));
       }
     }
 
@@ -244,8 +278,17 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
                                     if (filterText ==
                                         'Upcoming Nearby Events') {
                                       filterText = 'Registered Events';
+                                      activeWidget = RegisteredEventsListview(
+                                        list: registeredEvents,
+                                        token: widget.token,
+                                      );
+                                      // set active widget to registered events screen here
                                     } else {
                                       filterText = 'Upcoming Nearby Events';
+                                      activeWidget = NearbyEventsListview(
+                                        list: nearbyEvents,
+                                        token: widget.token,
+                                      );
                                     }
                                   });
                                 },
