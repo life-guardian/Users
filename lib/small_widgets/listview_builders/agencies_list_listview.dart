@@ -1,6 +1,10 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_app/models/agencies_details.dart';
+import 'package:user_app/screens/operation_details.dart';
+import 'package:user_app/transitions_animations/custom_page_transition.dart';
 
 class AgenciesListListview extends StatelessWidget {
   const AgenciesListListview({
@@ -8,14 +12,17 @@ class AgenciesListListview extends StatelessWidget {
     required this.list,
     required this.scrollController,
     required this.isLoadingMore,
+    required this.token,
   });
   final List<Agencies> list;
   final ScrollController scrollController;
   final bool isLoadingMore;
+  final token;
+  // final String sId;
 
   @override
   Widget build(BuildContext context) {
-    ThemeData themeData = Theme.of(context);
+    // ThemeData themeData = Theme.of(context);
     return list.isEmpty
         ? Center(
             child: Text(
@@ -32,18 +39,29 @@ class AgenciesListListview extends StatelessWidget {
             itemBuilder: (context, index) {
               if (index < list.length) {
                 final alertData = list.elementAt(index);
-                return Card(
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  color: Theme.of(context).colorScheme.secondary,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 20,
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      CustomSlideTransition(
+                        direction: AxisDirection.left,
+                        child: OperationDetailsScreen(
+                            eventId: alertData.sId!,
+                            token: token,
+                            screenType: 'AgencyDetails'),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Expanded(
+                    color: Theme.of(context).colorScheme.secondary,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 20,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

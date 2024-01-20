@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    print(widget.token);
+    debugPrint(widget.token);
   }
 
   @override
@@ -172,34 +172,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 21,
                 ),
                 Row(
+                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                CustomSlideTransition(
-                                  direction: AxisDirection.left,
-                                  child: FeaturesScreen(
-                                      screenType: 'ProgramEvents',
-                                      token: widget.token),
-                                ),
-                              );
-                            },
-                            child: const CustomCardWidget(
-                              width: 170,
-                              height: 170,
-                              color1: Color(0xffA9FFEA),
-                              color2: Color(0xff00B288),
-                              title: 'Programs & Events',
-                              desc: 'Nearby',
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 11,
-                          ),
-                          const CustomCardWidget(
+                    Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            // code here to navigate to maps
+                          },
+                          child: const CustomCardWidget(
                             width: 170,
                             height: 120,
                             color1: Color(0xffFFA0BC),
@@ -207,58 +188,80 @@ class _HomeScreenState extends State<HomeScreen> {
                             title: 'Agencies',
                             desc: 'Nearby rescue ops',
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(
+                          height: 11,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              CustomSlideTransition(
+                                direction: AxisDirection.left,
+                                child: FeaturesScreen(
+                                    screenType: 'ProgramEvents',
+                                    token: widget.token),
+                              ),
+                            );
+                          },
+                          child: const CustomCardWidget(
+                            width: 170,
+                            height: 170,
+                            color1: Color(0xffA9FFEA),
+                            color2: Color(0xff00B288),
+                            title: 'Programs & Events',
+                            desc: 'Nearby',
+                          ),
+                        ),
+                      ],
                     ),
-                    // Spacer(flex: 1),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                CustomSlideTransition(
-                                  direction: AxisDirection.left,
-                                  child: FeaturesScreen(
-                                      token: widget.token,
-                                      screenType: 'Alerts'),
-                                ),
-                              );
-                            },
-                            child: const CustomCardWidget(
-                              width: 170,
-                              height: 120,
-                              color1: Color(0xffFFD29D),
-                              color2: Color(0xffFF9E2D),
-                              title: 'Alerts',
-                              desc: 'Active',
-                            ),
+                    const SizedBox(
+                      width: 11,
+                    ),
+                    Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              CustomSlideTransition(
+                                direction: AxisDirection.left,
+                                child: FeaturesScreen(
+                                    token: widget.token,
+                                    screenType: 'SearchAgency'),
+                              ),
+                            );
+                          },
+                          child: const CustomCardWidget(
+                            width: 170,
+                            height: 170,
+                            color1: Color(0xffB1EEFF),
+                            color2: Color(0xff29BAE2),
+                            title: 'Search',
+                            desc: 'Agency details',
                           ),
-                          const SizedBox(
-                            height: 11,
+                        ),
+                        const SizedBox(
+                          height: 11,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              CustomSlideTransition(
+                                direction: AxisDirection.left,
+                                child: FeaturesScreen(
+                                    token: widget.token, screenType: 'Alerts'),
+                              ),
+                            );
+                          },
+                          child: const CustomCardWidget(
+                            width: 170,
+                            height: 120,
+                            color1: Color(0xffFFD29D),
+                            color2: Color(0xffFF9E2D),
+                            title: 'Alerts',
+                            desc: 'Active',
                           ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                CustomSlideTransition(
-                                  direction: AxisDirection.left,
-                                  child: FeaturesScreen(
-                                      token: widget.token,
-                                      screenType: 'SearchAgency'),
-                                ),
-                              );
-                            },
-                            child: const CustomCardWidget(
-                              width: 170,
-                              height: 170,
-                              color1: Color(0xffB1EEFF),
-                              color2: Color(0xff29BAE2),
-                              title: 'Search',
-                              desc: 'Agency details',
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ],
                 )

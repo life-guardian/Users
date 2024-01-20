@@ -8,18 +8,18 @@ import 'package:http/http.dart' as http;
 import 'package:user_app/models/agencies_details.dart';
 import 'package:user_app/small_widgets/listview_builders/agencies_list_listview.dart';
 
-class SearchAgencyScreen extends StatefulWidget {
-  const SearchAgencyScreen({
+class SearchAgencyWidget extends StatefulWidget {
+  const SearchAgencyWidget({
     super.key,
     required this.token,
   });
   final token;
 
   @override
-  State<SearchAgencyScreen> createState() => _SearchAgencyScreenState();
+  State<SearchAgencyWidget> createState() => _SearchAgencyScreenState();
 }
 
-class _SearchAgencyScreenState extends State<SearchAgencyScreen> {
+class _SearchAgencyScreenState extends State<SearchAgencyWidget> {
   var scrollController = ScrollController();
   List<Agencies> agencies = [];
   int pageIndex = 1;
@@ -49,6 +49,7 @@ class _SearchAgencyScreenState extends State<SearchAgencyScreen> {
               list: agencies,
               scrollController: scrollController,
               isLoadingMore: isLoadingMore,
+              token: widget.token,
             );
           })
         });
@@ -67,16 +68,14 @@ class _SearchAgencyScreenState extends State<SearchAgencyScreen> {
     );
     List<Agencies> data = [];
 
-    print('StatusCode of fetchAgencies: ${response.statusCode}');
-
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
-      int totalPages = jsonResponse['totalPages'];
-      int currentPage = jsonResponse['currentPage'];
-      // print('TotalPages: $totalPages,  CurrentPage: $currentPage');
-      if (pageIndex > currentPage) {
-        pageIndex--;
-      }
+      // int totalPages = jsonResponse['totalPages'];
+      // int currentPage = jsonResponse['currentPage'];
+
+      // if (pageIndex > currentPage) {
+      //   pageIndex--;
+      // }
 
       List<dynamic> agenciesList = jsonResponse['agencies'];
 
@@ -85,7 +84,7 @@ class _SearchAgencyScreenState extends State<SearchAgencyScreen> {
       }
     }
 
-    print('AgenciesList: $data');
+    debugPrint('AgenciesList: $data');
 
     return data;
   }
@@ -104,6 +103,7 @@ class _SearchAgencyScreenState extends State<SearchAgencyScreen> {
           list: agencies,
           scrollController: scrollController,
           isLoadingMore: isLoadingMore,
+          token: widget.token,
         );
       });
       await fetchAgencies().then((value) => {
@@ -117,6 +117,7 @@ class _SearchAgencyScreenState extends State<SearchAgencyScreen> {
           list: agencies,
           scrollController: scrollController,
           isLoadingMore: isLoadingMore,
+          token: widget.token,
         );
       });
     }
@@ -133,6 +134,7 @@ class _SearchAgencyScreenState extends State<SearchAgencyScreen> {
               list: agencies,
               scrollController: scrollController,
               isLoadingMore: isLoadingMore,
+              token: widget.token,
             );
           })
         });

@@ -57,8 +57,6 @@ class OperationDetailsWidget extends StatelessWidget {
       var jsonResponse = jsonDecode(response.body);
       var message = jsonResponse['message'];
 
-      print(response.statusCode);
-
       if (response.statusCode == 200) {
         Navigator.of(context).pop();
         Navigator.of(context).pop();
@@ -76,7 +74,7 @@ class OperationDetailsWidget extends StatelessWidget {
         );
       }
     } catch (e) {
-      print("Registering Event Exception ${e.toString()}");
+      debugPrint("Registering Event Exception ${e.toString()}");
     }
   }
 
@@ -212,7 +210,7 @@ class OperationDetailsWidget extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 20, top: 10),
               child: SizedBox(
                 width: 200,
-                height: 50,
+                height: 40,
                 child: ElevatedButton(
                   onPressed: () {
                     registerForEvent(context);

@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, prefer_typing_uninitialized_variables
 
 import 'dart:async';
-import 'package:user_app/screens/home_screen.dart';
 import 'package:user_app/screens/tabs.dart';
 import 'package:user_app/transitions_animations/custom_fade_animation.dart';
 import 'package:flutter/material.dart';

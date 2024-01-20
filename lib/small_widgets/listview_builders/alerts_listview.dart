@@ -38,74 +38,69 @@ class AlertsListview extends StatelessWidget {
                     horizontal: 10,
                     vertical: 20,
                   ),
-                  child: Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              alertData.alertName.toString(),
-                              style: GoogleFonts.plusJakartaSans().copyWith(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            alertData.alertName.toString(),
+                            style: GoogleFonts.plusJakartaSans().copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
-                            const SizedBox(
-                              height: 5,
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            alertData.locality.toString(),
+                            style: GoogleFonts.plusJakartaSans().copyWith(
+                              color: Colors.grey,
+                              fontSize: 12,
                             ),
-                            Text(
-                              alertData.locality.toString(),
-                              style: GoogleFonts.plusJakartaSans().copyWith(
-                                color: Colors.grey,
-                                fontSize: 12,
-                              ),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            DateFormat('dd/MM/yy').format(DateTime.parse(
+                                alertData.alertForDate.toString())),
+                            style: GoogleFonts.plusJakartaSans().copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: (themeData.brightness == Brightness.light)
+                                  ? const Color.fromARGB(255, 224, 28, 14)
+                                  : Theme.of(context).colorScheme.onBackground,
+                              fontSize: 16,
                             ),
-                            const SizedBox(
-                              height: 5,
+                          ),
+                        ],
+                      ),
+                      Column(
+                        // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            alertData.alertSeverity.toString(),
+                            style: GoogleFonts.plusJakartaSans().copyWith(
+                              color: Colors.grey,
+                              fontSize: 12,
                             ),
-                            Text(
-                              DateFormat('dd/MM/yy').format(DateTime.parse(
-                                  alertData.alertForDate.toString())),
-                              style: GoogleFonts.plusJakartaSans().copyWith(
-                                fontWeight: FontWeight.bold,
-                                color:
-                                    (themeData.brightness == Brightness.light)
-                                        ? const Color.fromARGB(255, 224, 28, 14)
-                                        : Theme.of(context)
-                                            .colorScheme
-                                            .onBackground,
-                                fontSize: 16,
-                              ),
+                          ),
+                          const SizedBox(
+                            height: 31,
+                          ),
+                          Text(
+                            alertData.agencyName.toString(),
+                            style: GoogleFonts.plusJakartaSans().copyWith(
+                              color: Colors.grey,
+                              fontSize: 12,
                             ),
-                          ],
-                        ),
-                        Column(
-                          // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              alertData.alertSeverity.toString(),
-                              style: GoogleFonts.plusJakartaSans().copyWith(
-                                color: Colors.grey,
-                                fontSize: 12,
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 31,
-                            ),
-                            Text(
-                              alertData.agencyName.toString(),
-                              style: GoogleFonts.plusJakartaSans().copyWith(
-                                color: Colors.grey,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               );

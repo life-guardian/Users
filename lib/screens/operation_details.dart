@@ -7,7 +7,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:user_app/api_urls/config.dart';
-import 'package:user_app/small_widgets/custom_dialogs/custom_show_dialog.dart';
+import 'package:user_app/small_widgets/custom_screen_widgets/agency_details.dart';
 import 'package:user_app/small_widgets/custom_screen_widgets/operation_details_widget.dart';
 
 class OperationDetailsScreen extends StatefulWidget {
@@ -15,9 +15,11 @@ class OperationDetailsScreen extends StatefulWidget {
     super.key,
     required this.eventId,
     required this.token,
+    required this.screenType,
   });
 
   final String eventId;
+  final String screenType;
   final token;
 
   @override
@@ -31,58 +33,116 @@ class _OperationDetailsScreenState extends State<OperationDetailsScreen> {
     ),
   );
 
-  late String eventName;
-  late String eventId;
-  late String eventDescription;
-  late String agencyName;
-  late String eventDate;
-  late List<double> coordinate;
+  String? eventName;
+  String? eventId;
+  String? eventDescription;
+  String? eventDate;
+  String? agencyName;
+  String? agencyEmail;
+  String? representativeName;
+  String? agencyAddress;
+  int? rescueOperations;
+  int? eventsOrganized;
+  int? agencyPhone;
+  List<double>? coordinate;
   String? locality;
 
   @override
   void initState() {
     super.initState();
-    getOperationDetailsData();
+    if (widget.screenType == 'OperationDetails') {
+      getOperationDetails();
+    } else if (widget.screenType == 'AgencyDetails') {
+      // code here for agencydetails screen
+      getAgencyDetails();
+
+      setState(() {});
+    }
   }
 
-  void getOperationDetailsData() async {
-    var response = await http.get(
-      Uri.parse('$eventDetailsUrl/${widget.eventId.toString()}'),
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer ${widget.token}'
-      },
-    );
-
-    var jsonResponse = jsonDecode(response.body);
-
-    eventName = jsonResponse['eventName'];
-    eventId = jsonResponse['eventId'];
-    eventDescription = jsonResponse['eventDescription'];
-    agencyName = jsonResponse['agencyName'];
-    eventDate = jsonResponse['eventDate'];
-    coordinate = jsonResponse['eventLocation'].cast<double>();
-
+  void getAgencyDetails() async {
     try {
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(coordinate[1], coordinate[0]);
-      Placemark placemark = placemarks[0];
-      locality = placemark.locality;
-      print(locality);
-    } catch (error) {
-      print("Error fetching locality for coordinates: $coordinate");
-    }
+      var response = await http.get(
+        Uri.parse('$agencyDetailsUrl/${widget.eventId.toString()}'),
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer ${widget.token}'
+        },
+      );
 
-    activeScreen = OperationDetailsWidget(
-      eventName: eventName,
-      eventDescription: eventDescription,
-      agencyName: agencyName,
-      eventDate: eventDate,
-      locality: locality!,
-      eventId: eventId,
-      token: widget.token,
-      // registerForEvent: registerForEvent,
-    );
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
+
+        agencyName = jsonResponse['agencyName'];
+        agencyEmail = jsonResponse['agencyEmail'];
+        representativeName = jsonResponse['representativeName'];
+        agencyAddress = jsonResponse['agencyAddress'];
+        rescueOperations = jsonResponse['rescueOperations'];
+        eventsOrganized = jsonResponse['eventsOrganized'];
+        agencyPhone = jsonResponse['agencyPhone'];
+      }
+
+      debugPrint(
+          '$agencyName/$agencyEmail/$representativeName/$agencyAddress/$rescueOperations/$eventsOrganized/$agencyPhone');
+      // buid list
+      activeScreen = AgencyDetails(
+          agencyName: agencyName!,
+          agencyEmail: agencyEmail!,
+          representativeName: representativeName!,
+          agencyAddress: agencyAddress!,
+          rescueOperations: rescueOperations!,
+          eventsOrganized: eventsOrganized!,
+          agencyPhone: agencyPhone!);
+    } catch (e) {
+      debugPrint('Exception ocurred while fetchin getAgencyDetails');
+    }
+    setState(() {});
+  }
+
+  void getOperationDetails() async {
+    try {
+      var response = await http.get(
+        Uri.parse('$eventDetailsUrl/${widget.eventId.toString()}'),
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer ${widget.token}'
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
+
+        eventName = jsonResponse['eventName'];
+        eventId = jsonResponse['eventId'];
+        eventDescription = jsonResponse['eventDescription'];
+        agencyName = jsonResponse['agencyName'];
+        eventDate = jsonResponse['eventDate'];
+        coordinate = jsonResponse['eventLocation'].cast<double>();
+
+        try {
+          List<Placemark> placemarks =
+              await placemarkFromCoordinates(coordinate![1], coordinate![0]);
+          Placemark placemark = placemarks[0];
+          locality = placemark.locality;
+          debugPrint(locality);
+        } catch (error) {
+          debugPrint("Error fetching locality for coordinates: $coordinate");
+        }
+
+        activeScreen = OperationDetailsWidget(
+          eventName: eventName!,
+          eventDescription: eventDescription!,
+          agencyName: agencyName!,
+          eventDate: eventDate!,
+          locality: locality!,
+          eventId: eventId!,
+          token: widget.token,
+          // registerForEvent: registerForEvent,
+        );
+      }
+    } catch (e) {
+      debugPrint('Exception ocurred while fetchin getAgencyDetails');
+    }
     setState(() {});
   }
 

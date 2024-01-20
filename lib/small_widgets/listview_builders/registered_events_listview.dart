@@ -39,34 +39,32 @@ class RegisteredEventsListview extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   color: Theme.of(context).colorScheme.secondary,
-                  child: Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Text(
-                            eventData.eventName.toString(),
-                            style: GoogleFonts.plusJakartaSans().copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(
+                          eventData.eventName.toString(),
+                          style: GoogleFonts.plusJakartaSans().copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
                           ),
-                          Text(
-                            DateFormat('dd/MM/yy').format(
-                                DateTime.parse(eventData.eventDate.toString())),
-                            style: GoogleFonts.plusJakartaSans().copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: (themeData.brightness == Brightness.light)
-                                  ? const Color.fromARGB(255, 224, 28, 14)
-                                  : Theme.of(context).colorScheme.onBackground,
-                              fontSize: 16,
-                            ),
+                        ),
+                        Text(
+                          DateFormat('dd/MM/yy').format(
+                              DateTime.parse(eventData.eventDate.toString())),
+                          style: GoogleFonts.plusJakartaSans().copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: (themeData.brightness == Brightness.light)
+                                ? const Color.fromARGB(255, 224, 28, 14)
+                                : Theme.of(context).colorScheme.onBackground,
+                            fontSize: 16,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

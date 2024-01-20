@@ -64,7 +64,7 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
             registeredEvents.addAll(value),
           });
     } else if (widget.screenType == 'SearchAgency') {
-      activeWidget = SearchAgencyScreen(
+      activeWidget = SearchAgencyWidget(
         token: widget.token,
       );
     }
@@ -155,7 +155,7 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
         String? locality = placemark.locality;
         localities.add(locality!);
       } catch (error) {
-        print("Error fetching locality for coordinates: $coordinate");
+        debugPrint("Error fetching locality for coordinates: $coordinate");
         localities.add("Unknown"); // Add a placeholder for unknown localities
       }
     }

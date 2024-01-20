@@ -36,14 +36,18 @@ class _TabsBottomState extends State<TabsBottom> {
 
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
-      print('Location Denied');
-      LocationPermission ask = await Geolocator.requestPermission();
+      debugPrint('Location Access Denied');
+      await Geolocator.requestPermission();
+      Position currentPosition = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.best);
+      universalLat = currentPosition.latitude;
+      universaLng = currentPosition.longitude;
     } else {
       Position currentPosition = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.best);
       universalLat = currentPosition.latitude;
       universaLng = currentPosition.longitude;
-      print(
+      debugPrint(
           "Latitude: ${universalLat.toString()} , Longitude: ${universaLng.toString()}");
     }
     // Navigator.of(context).pop();
@@ -52,7 +56,7 @@ class _TabsBottomState extends State<TabsBottom> {
 
   void getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final myToken = prefs.getString('token');
+    prefs.getString('token');
   }
 
   void onSelectedTab(int index) {
@@ -80,32 +84,39 @@ class _TabsBottomState extends State<TabsBottom> {
     showCircularProgressBar();
 
     try {
-      var response = await http.get(
+      await http.get(
         Uri.parse(loginUrl),
         headers: {
           "Content-Type": "application/json",
           'Authorization': 'Bearer ${widget.token}'
         },
       );
+      // var message;
+      // if (response.statusCode == 200) {
+      // var jsonResponse = jsonDecode(response.body);
+      // message = jsonResponse['message'];
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.remove('token');
+      while (Navigator.canPop(context)) {
+        Navigator.of(context).pop();
+      }
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (ctx) => const WelcomeScreen(),
+        ),
+      );
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (ctx) => const LoginScreen(),
+        ),
+      );
+      // } else {
+      //   customShowDialog(
+      //       context: context, titleText: 'Ooops!', contentText: message);
+      // }
     } catch (error) {
-      print("Logout user exception: ${error.toString()}");
+      debugPrint("Logout user exception: ${error.toString()}");
     }
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove('token');
-    while (Navigator.canPop(context)) {
-      Navigator.of(context).pop();
-    }
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (ctx) => const WelcomeScreen(),
-      ),
-    );
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (ctx) => const LoginScreen(),
-      ),
-    );
   }
 
   @override

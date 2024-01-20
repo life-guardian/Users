@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(reqBody),
     );
-    
+
     var jsonResponse = jsonDecode(response.body);
     var message = jsonResponse['message'];
     if (response.statusCode == 200) {
@@ -239,7 +239,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           child: isLogging
-                              ? const Expanded(
+                              ? const Center(
                                   child: CircularProgressIndicator(),
                                 )
                               : const Text('Login'),
