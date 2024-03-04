@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -20,9 +21,11 @@ class FeaturesScreen extends StatefulWidget {
     super.key,
     required this.token,
     required this.screenType,
+    required this.username,
   });
   final token;
   final String screenType;
+  final String username;
 
   @override
   State<FeaturesScreen> createState() => _FeaturesScreenState();
@@ -51,18 +54,19 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
             })
           });
     } else if (widget.screenType == 'ProgramEvents') {
-      getNearByEventsData().then((value) => {
-            setState(() {
+      Timer.periodic(const Duration(seconds: 1), (timer) {
+        getNearByEventsData().then((value) => setState(() {
               nearbyEvents.addAll(value);
               activeWidget = NearbyEventsListview(
                 list: nearbyEvents,
                 token: widget.token,
+                stream: fetchNearbyEvents(),
               );
-            })
-          });
-      getRegisteredEventsData().then((value) => {
-            registeredEvents.addAll(value),
-          });
+            }));
+        getRegisteredEventsData().then((value) => {
+              registeredEvents.addAll(value),
+            });
+      });
     } else if (widget.screenType == 'SearchAgency') {
       activeWidget = SearchAgencyWidget(
         token: widget.token,
@@ -167,6 +171,28 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
     return data;
   }
 
+  Stream<List<NearbyEvents>> fetchNearbyEvents() async* {
+    var response = await http.get(
+      Uri.parse(nearbyEventsUrl),
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer ${widget.token}'
+      },
+    );
+
+    List<NearbyEvents> data = [];
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      for (var jsonData in jsonResponse) {
+        data.add(NearbyEvents.fromJson(jsonData));
+      }
+    }
+
+    yield data;
+  }
+
   @override
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
@@ -195,7 +221,7 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
                         height: 5,
                       ),
                       Text(
-                        'userName',
+                        widget.username!,
                         // email,
                         style: GoogleFonts.plusJakartaSans().copyWith(
                           fontSize: 18,
@@ -299,6 +325,7 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
                                       activeWidget = NearbyEventsListview(
                                         list: nearbyEvents,
                                         token: widget.token,
+                                        stream: fetchNearbyEvents(),
                                       );
                                     }
                                   });

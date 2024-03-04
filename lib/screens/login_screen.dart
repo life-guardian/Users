@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:user_app/screens/tabs.dart';
 import 'package:user_app/small_widgets/custom_dialogs/custom_show_dialog.dart';
 import 'package:user_app/api_urls/config.dart';
@@ -31,6 +32,13 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     initSharedPrefs();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    userLoginEmail.dispose();
+    userPassword.dispose();
   }
 
   void initSharedPrefs() async {
@@ -96,13 +104,15 @@ class _LoginScreenState extends State<LoginScreen> {
       body: jsonEncode(reqBody),
     );
 
+    String? userName;
     var jsonResponse = jsonDecode(response.body);
-    var message = jsonResponse['message'];
+    String message = jsonResponse['message'];
     if (response.statusCode == 200) {
+      userName = jsonResponse['data']['name'];
       //storin user login data in local variable
       var myToken = jsonResponse['token'];
       prefs.setString('token', myToken);
-
+      prefs.setString('username', userName!);
       // Navigator.of(context).pop();
       _navigateToHomeScreen(token: myToken);
       //success
@@ -114,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
       buttonPressed = await customShowDialog(
         context: context,
         titleText: 'Something went wrong',
-        contentText: message,
+        contentText: message!,
       );
       buttonPressed = false;
       return;

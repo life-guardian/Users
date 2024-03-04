@@ -2,24 +2,40 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:user_app/large_widget/custom_card_widget.dart';
 import 'package:user_app/screens/features_screen.dart';
 import 'package:user_app/small_widgets/custom_text_widgets/custom_text_widget.dart';
 import 'package:user_app/transitions_animations/custom_page_transition.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.token});
+  const HomeScreen({
+    super.key,
+    required this.token,
+    required this.userName,
+  });
   final token;
+  final String userName;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late String dayOfWeek;
+  late String formattedDate;
+
   @override
   void initState() {
     super.initState();
     debugPrint(widget.token);
+    loadAllRequiredData();
+  }
+
+  void loadAllRequiredData() {
+    final now = DateTime.now();
+    dayOfWeek = DateFormat('EEEE').format(now); // Monday, Tuesday, etc.
+    formattedDate = DateFormat('dd MMMM').format(now);
   }
 
   @override
@@ -39,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Monday',
+                      dayOfWeek,
                       style: GoogleFonts.abhayaLibre(
                         fontSize: 14,
                         fontWeight: FontWeight.normal,
@@ -49,11 +65,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(
                       height: 5,
                     ),
-                    const CustomTextWidget(
-                      text: '25 October',
+                    CustomTextWidget(
+                      text: formattedDate,
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xff040415),
+                      color: const Color(0xff040415),
                     ),
                   ],
                 ),
@@ -70,8 +86,10 @@ class _HomeScreenState extends State<HomeScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const CustomTextWidget(
-                  text: 'Hi Pruthviraj.',
+                CustomTextWidget(
+                  text: (widget.userName != "")
+                      ? 'Hi ${widget.userName}.'
+                      : "Loading...",
                   fontSize: 28,
                   fontWeight: FontWeight.w500,
                 ),
@@ -198,8 +216,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               CustomSlideTransition(
                                 direction: AxisDirection.left,
                                 child: FeaturesScreen(
-                                    screenType: 'ProgramEvents',
-                                    token: widget.token),
+                                  screenType: 'ProgramEvents',
+                                  token: widget.token,
+                                  username: widget.userName,
+                                ),
                               ),
                             );
                           },
@@ -225,8 +245,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               CustomSlideTransition(
                                 direction: AxisDirection.left,
                                 child: FeaturesScreen(
-                                    token: widget.token,
-                                    screenType: 'SearchAgency'),
+                                  token: widget.token,
+                                  screenType: 'SearchAgency',
+                                  username: widget.userName,
+                                ),
                               ),
                             );
                           },
@@ -248,7 +270,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               CustomSlideTransition(
                                 direction: AxisDirection.left,
                                 child: FeaturesScreen(
-                                    token: widget.token, screenType: 'Alerts'),
+                                  token: widget.token,
+                                  screenType: 'Alerts',
+                                  username: widget.userName,
+                                ),
                               ),
                             );
                           },

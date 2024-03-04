@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Angencies',
+      title: 'Users',
       theme: lightTheme,
       darkTheme: darkTheme,
       home: startScreen(),

@@ -24,7 +24,7 @@ class _SearchAgencyScreenState extends State<SearchAgencyWidget> {
   List<Agencies> agencies = [];
   int pageIndex = 1;
   bool isLoadingMore = false;
-  String searchTextToString = 'team';
+  String searchTextToString = '';
   TextEditingController searchText = TextEditingController();
 
   Widget activeScreen = const Center(
@@ -130,6 +130,9 @@ class _SearchAgencyScreenState extends State<SearchAgencyWidget> {
           setState(() {
             agencies = [];
             agencies.addAll(value);
+
+            print("Values: $value");
+            print("Agencies: $agencies");
             activeScreen = AgenciesListListview(
               list: agencies,
               scrollController: scrollController,
@@ -148,6 +151,7 @@ class _SearchAgencyScreenState extends State<SearchAgencyWidget> {
         TextField(
           controller: searchText,
           onChanged: (value) {
+            pageIndex = 1;
             searchAgency();
           },
           decoration: InputDecoration(

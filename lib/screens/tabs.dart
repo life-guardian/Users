@@ -11,7 +11,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class TabsBottom extends StatefulWidget {
-  const TabsBottom({super.key, required this.token});
+  const TabsBottom({
+    super.key,
+    required this.token,
+  });
   final token;
 
   @override
@@ -20,18 +23,25 @@ class TabsBottom extends StatefulWidget {
 
 class _TabsBottomState extends State<TabsBottom> {
   int _currentIndx = 0;
-  late String myToken;
+
+  String? userName;
 
   @override
   void initState() {
     super.initState();
 
-    getToken();
+    getNameSharedPreference();
     getLocation();
-    globalToken = widget.token;
   }
 
-  Future<String> getLocation() async {
+  Future<void> getNameSharedPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('username');
+    });
+  }
+
+  Future<void> getLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
 
     if (permission == LocationPermission.denied ||
@@ -51,12 +61,7 @@ class _TabsBottomState extends State<TabsBottom> {
           "Latitude: ${universalLat.toString()} , Longitude: ${universaLng.toString()}");
     }
     // Navigator.of(context).pop();
-    return 'load screen';
-  }
-
-  void getToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.getString('token');
+   
   }
 
   void onSelectedTab(int index) {
@@ -84,19 +89,20 @@ class _TabsBottomState extends State<TabsBottom> {
     showCircularProgressBar();
 
     try {
-      await http.get(
-        Uri.parse(loginUrl),
-        headers: {
-          "Content-Type": "application/json",
-          'Authorization': 'Bearer ${widget.token}'
-        },
-      );
+      // await http.get(
+      //   Uri.parse(loginUrl),
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     'Authorization': 'Bearer ${widget.token}'
+      //   },
+      // );
       // var message;
       // if (response.statusCode == 200) {
       // var jsonResponse = jsonDecode(response.body);
       // message = jsonResponse['message'];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.remove('token');
+      prefs.remove('username');
       while (Navigator.canPop(context)) {
         Navigator.of(context).pop();
       }
@@ -123,6 +129,7 @@ class _TabsBottomState extends State<TabsBottom> {
   Widget build(BuildContext context) {
     Widget activePage = HomeScreen(
       token: widget.token,
+      userName: userName!,
     );
 
     if (_currentIndx == 1) {
