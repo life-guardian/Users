@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:user_app/api_urls/config.dart';
@@ -28,6 +29,7 @@ class ProgramEventDetails extends StatelessWidget {
   final String locality;
   final String eventId;
   final token;
+
   // final void Function() registerForEvent;
 
   void registerForEvent(BuildContext context) async {
@@ -59,7 +61,7 @@ class ProgramEventDetails extends StatelessWidget {
 
       if (response.statusCode == 200) {
         Navigator.of(context).pop();
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(message),
@@ -129,12 +131,24 @@ class ProgramEventDetails extends StatelessWidget {
                   const SizedBox(
                     height: 11,
                   ),
-                  Text(
-                    'DESCRIPTION: $eventDescription',
-                    style: GoogleFonts.mulish().copyWith(
-                      fontWeight: FontWeight.normal,
-                      fontSize: 16,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'DESCRIPTION'.toUpperCase(),
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        eventDescription,
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(
                     height: 21,
@@ -206,8 +220,8 @@ class ProgramEventDetails extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 31,
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 8,
                   ),
                   const Divider(thickness: 0.2),
                   Center(

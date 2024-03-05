@@ -8,7 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:user_app/api_urls/config.dart';
 import 'package:user_app/small_widgets/custom_screen_widgets/agency_details.dart';
-import 'package:user_app/small_widgets/custom_screen_widgets/operation_details_widget.dart';
+import 'package:user_app/small_widgets/custom_screen_widgets/program_event_details.dart';
 
 class DetailsScreen extends StatefulWidget {
   const DetailsScreen({
@@ -16,11 +16,13 @@ class DetailsScreen extends StatefulWidget {
     required this.eventId,
     required this.token,
     required this.screenType,
+    required this.userName,
   });
 
   final String eventId;
   final String screenType;
   final token;
+  final String userName;
 
   @override
   State<DetailsScreen> createState() => _DetailsScreenState();
@@ -50,8 +52,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.screenType == 'OperationDetails') {
-      getOperationDetails();
+    if (widget.screenType == 'EventDetails') {
+      getEventsDetails();
     } else if (widget.screenType == 'AgencyDetails') {
       // code here for agencydetails screen
       getAgencyDetails();
@@ -98,7 +100,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     setState(() {});
   }
 
-  void getOperationDetails() async {
+  void getEventsDetails() async {
     try {
       var response = await http.get(
         Uri.parse('$eventDetailsUrl/${widget.eventId.toString()}'),
@@ -140,7 +142,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
         );
       }
     } catch (e) {
-      debugPrint('Exception ocurred while fetchin getAgencyDetails');
+      debugPrint('Exception ocurred while fetching getAgencyDetails');
     }
     setState(() {});
   }
@@ -173,7 +175,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         height: 5,
                       ),
                       Text(
-                        'userName',
+                        widget.userName,
                         // email,
                         style: GoogleFonts.plusJakartaSans().copyWith(
                           fontSize: 18,
@@ -198,7 +200,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       ),
                     ),
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pop(false);
                     },
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

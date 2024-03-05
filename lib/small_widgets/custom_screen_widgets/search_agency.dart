@@ -12,8 +12,10 @@ class SearchAgencyWidget extends StatefulWidget {
   const SearchAgencyWidget({
     super.key,
     required this.token,
+    required this.userName,
   });
   final token;
+  final String userName;
 
   @override
   State<SearchAgencyWidget> createState() => _SearchAgencyScreenState();
@@ -47,6 +49,7 @@ class _SearchAgencyScreenState extends State<SearchAgencyWidget> {
           setState(() {
             activeScreen = AgenciesListListview(
               list: agencies,
+              userName: widget.userName,
               scrollController: scrollController,
               isLoadingMore: isLoadingMore,
               token: widget.token,
@@ -100,6 +103,7 @@ class _SearchAgencyScreenState extends State<SearchAgencyWidget> {
       setState(() {
         isLoadingMore = true;
         activeScreen = AgenciesListListview(
+          userName: widget.userName,
           list: agencies,
           scrollController: scrollController,
           isLoadingMore: isLoadingMore,
@@ -116,6 +120,7 @@ class _SearchAgencyScreenState extends State<SearchAgencyWidget> {
         activeScreen = AgenciesListListview(
           list: agencies,
           scrollController: scrollController,
+          userName: widget.userName,
           isLoadingMore: isLoadingMore,
           token: widget.token,
         );
@@ -134,6 +139,7 @@ class _SearchAgencyScreenState extends State<SearchAgencyWidget> {
             print("Values: $value");
             print("Agencies: $agencies");
             activeScreen = AgenciesListListview(
+              userName: widget.userName,
               list: agencies,
               scrollController: scrollController,
               isLoadingMore: isLoadingMore,

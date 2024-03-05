@@ -1,22 +1,25 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:user_app/models/registered_events.dart';
+import 'package:user_app/providers/program_events_provider.dart';
 
 class RegisteredEventsListview extends StatelessWidget {
   const RegisteredEventsListview({
     super.key,
-    required this.list,
+    required this.ref,
     required this.token,
   });
-  final List<RegisteredEvents> list;
+
   final token;
+  final WidgetRef ref;
 
   @override
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
-    return list.isEmpty
+    final registeredEventsList = ref.watch(registeredEventsProvider);
+    return registeredEventsList.isEmpty
         ? Center(
             child: Text(
               'No data found, Sorry! 😔',
@@ -27,9 +30,9 @@ class RegisteredEventsListview extends StatelessWidget {
             ),
           )
         : ListView.builder(
-            itemCount: list.length,
+            itemCount: registeredEventsList.length,
             itemBuilder: (context, index) {
-              final eventData = list.elementAt(index);
+              final eventData = registeredEventsList.elementAt(index);
               return SizedBox(
                 height: 90,
                 child: Card(
@@ -47,6 +50,7 @@ class RegisteredEventsListview extends StatelessWidget {
                       children: [
                         Text(
                           eventData.eventName.toString(),
+                          overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.plusJakartaSans().copyWith(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,

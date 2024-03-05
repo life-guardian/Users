@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_app/models/agencies_details.dart';
-import 'package:user_app/screens/operation_details.dart';
+import 'package:user_app/screens/details_screen.dart';
 import 'package:user_app/transitions_animations/custom_page_transition.dart';
 
 class AgenciesListListview extends StatelessWidget {
@@ -13,10 +13,12 @@ class AgenciesListListview extends StatelessWidget {
     required this.scrollController,
     required this.isLoadingMore,
     required this.token,
+    required this.userName,
   });
   final List<Agencies> list;
   final ScrollController scrollController;
   final bool isLoadingMore;
+  final String userName;
   final token;
   // final String sId;
 
@@ -47,6 +49,7 @@ class AgenciesListListview extends StatelessWidget {
                         child: DetailsScreen(
                             eventId: alertData.sId!,
                             token: token,
+                            userName: userName,
                             screenType: 'AgencyDetails'),
                       ),
                     );

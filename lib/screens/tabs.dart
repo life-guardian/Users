@@ -4,8 +4,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:user_app/api_urls/config.dart';
+import 'package:user_app/providers/alert_providert.dart';
+import 'package:user_app/providers/program_events_provider.dart';
 import 'package:user_app/screens/home_screen.dart';
 import 'package:user_app/screens/login_screen.dart';
 import 'package:user_app/screens/user_account_details.dart';
@@ -14,7 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class TabsBottom extends StatefulWidget {
+class TabsBottom extends ConsumerStatefulWidget {
   const TabsBottom({
     super.key,
     required this.token,
@@ -22,11 +25,17 @@ class TabsBottom extends StatefulWidget {
   final token;
 
   @override
-  State<TabsBottom> createState() => _TabsBottomState();
+  ConsumerState<TabsBottom> createState() => _TabsBottomState();
 }
 
-class _TabsBottomState extends State<TabsBottom> {
+class _TabsBottomState extends ConsumerState<TabsBottom> {
   int _currentIndx = 0;
+  bool dataLoaded = false;
+  Widget activePage = const Center(
+    child: CircularProgressIndicator(
+      color: Colors.grey,
+    ),
+  );
 
   String? userName;
 
@@ -48,6 +57,9 @@ class _TabsBottomState extends State<TabsBottom> {
   void dispose() {
     super.dispose();
     getLocation();
+    ref.read(nearbyEventsProvider.notifier).clearData();
+    ref.read(registeredEventsProvider.notifier).clearData();
+    ref.read(alertsProvider.notifier).clearData();
   }
 
   Future<void> getNameSharedPreference() async {
@@ -93,6 +105,14 @@ class _TabsBottomState extends State<TabsBottom> {
     var jsonResponse = jsonDecode(response.body);
 
     debugPrint("When the app started: ${jsonResponse['message']}");
+
+    setState(() {
+      dataLoaded = true;
+      activePage = HomeScreen(
+        token: widget.token,
+        userName: userName ?? "",
+      );
+    });
   }
 
   void onSelectedTab(int index) {
@@ -158,16 +178,19 @@ class _TabsBottomState extends State<TabsBottom> {
 
   @override
   Widget build(BuildContext context) {
-    Widget activePage = HomeScreen(
-      token: widget.token,
-      userName: userName ?? "",
-    );
+    if (dataLoaded) {
+      activePage = HomeScreen(
+        token: widget.token,
+        userName: userName ?? "",
+      );
+    }
 
     if (_currentIndx == 1) {
       activePage = UserAccountDetails(
         logoutUser: _logoutUser,
       );
     }
+
     return Scaffold(
       // backgroundColor: Colors.grey.shade200,
       backgroundColor: Theme.of(context).colorScheme.background,

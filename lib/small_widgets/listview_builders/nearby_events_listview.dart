@@ -2,25 +2,32 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:user_app/models/nearby_events.dart';
-import 'package:user_app/screens/operation_details.dart';
+import 'package:user_app/providers/program_events_provider.dart';
+import 'package:user_app/screens/details_screen.dart';
 import 'package:user_app/transitions_animations/custom_page_transition.dart';
 
 class NearbyEventsListview extends StatelessWidget {
   const NearbyEventsListview({
     super.key,
-    required this.list,
     required this.token,
+    required this.ref,
+    required this.userName,
+    required this.onTap,
   });
-  final List<NearbyEvents> list;
+  final WidgetRef ref;
   final token;
+  final String userName;
+  final void Function() onTap;
 
   @override
   Widget build(BuildContext context) {
+    final nearbyEventsList = ref.watch(nearbyEventsProvider);
     ThemeData themeData = Theme.of(context);
-    return list.isEmpty
+    return nearbyEventsList.isEmpty
         ? Center(
             child: Text(
               'No data found, Sorry! 😔',
@@ -31,21 +38,26 @@ class NearbyEventsListview extends StatelessWidget {
             ),
           )
         : ListView.builder(
-            itemCount: list.length,
+            itemCount: nearbyEventsList.length,
             itemBuilder: (context, index) {
-              final eventData = list[index];
+              final eventData = nearbyEventsList[index];
               return GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
+                onTap: () async {
+                  final isRecallNearbyEvents = await Navigator.of(context).push(
                     CustomSlideTransition(
                       direction: AxisDirection.left,
                       child: DetailsScreen(
+                        userName: userName,
                         eventId: eventData.eventId.toString(),
                         token: token,
-                        screenType: 'OperationDetails',
+                        screenType: 'EventDetails',
                       ),
                     ),
                   );
+
+                  if (isRecallNearbyEvents) {
+                    onTap();
+                  }
                 },
                 child: Card(
                   elevation: 3,
@@ -66,29 +78,37 @@ class NearbyEventsListview extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  eventData.eventName.toString(),
-                                  style: GoogleFonts.plusJakartaSans().copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    eventData.eventName.toString(),
+                                    overflow: TextOverflow.ellipsis,
+                                    style:
+                                        GoogleFonts.plusJakartaSans().copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  eventData.agencyName!
-                                      .toUpperCase()
-                                      .toString(),
-                                  style: GoogleFonts.plusJakartaSans().copyWith(
-                                    color: Colors.grey,
-                                    fontSize: 12,
+                                  const SizedBox(
+                                    height: 5,
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    eventData.agencyName!
+                                        .toUpperCase()
+                                        .toString(),
+                                    style:
+                                        GoogleFonts.plusJakartaSans().copyWith(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 11,
                             ),
                             Text(
                               DateFormat('dd/MM/yy').format(DateTime.parse(
