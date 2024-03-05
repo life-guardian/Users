@@ -54,19 +54,16 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
             })
           });
     } else if (widget.screenType == 'ProgramEvents') {
-      Timer.periodic(const Duration(seconds: 1), (timer) {
-        getNearByEventsData().then((value) => setState(() {
-              nearbyEvents.addAll(value);
-              activeWidget = NearbyEventsListview(
-                list: nearbyEvents,
-                token: widget.token,
-                stream: fetchNearbyEvents(),
-              );
-            }));
-        getRegisteredEventsData().then((value) => {
-              registeredEvents.addAll(value),
-            });
-      });
+      getNearByEventsData().then((value) => setState(() {
+            nearbyEvents.addAll(value);
+            activeWidget = NearbyEventsListview(
+              list: nearbyEvents,
+              token: widget.token,
+            );
+          }));
+      getRegisteredEventsData().then((value) => {
+            registeredEvents.addAll(value),
+          });
     } else if (widget.screenType == 'SearchAgency') {
       activeWidget = SearchAgencyWidget(
         token: widget.token,
@@ -171,32 +168,12 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
     return data;
   }
 
-  Stream<List<NearbyEvents>> fetchNearbyEvents() async* {
-    var response = await http.get(
-      Uri.parse(nearbyEventsUrl),
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer ${widget.token}'
-      },
-    );
-
-    List<NearbyEvents> data = [];
-
-    if (response.statusCode == 200) {
-      var jsonResponse = jsonDecode(response.body);
-
-      for (var jsonData in jsonResponse) {
-        data.add(NearbyEvents.fromJson(jsonData));
-      }
-    }
-
-    yield data;
-  }
-
   @override
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
     return Scaffold(
+      resizeToAvoidBottomInset:
+          widget.screenType == 'SearchAgency' ? false : true,
       body: SafeArea(
         child: Column(
           children: [
@@ -325,7 +302,6 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
                                       activeWidget = NearbyEventsListview(
                                         list: nearbyEvents,
                                         token: widget.token,
-                                        stream: fetchNearbyEvents(),
                                       );
                                     }
                                   });

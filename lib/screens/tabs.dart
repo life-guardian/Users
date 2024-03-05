@@ -1,5 +1,9 @@
 // ignore_for_file: prefer_typing_uninitialized_variables, use_build_context_synchronously
 
+import 'dart:async';
+import 'dart:convert';
+import 'dart:ffi';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:user_app/api_urls/config.dart';
 import 'package:user_app/screens/home_screen.dart';
@@ -31,6 +35,18 @@ class _TabsBottomState extends State<TabsBottom> {
     super.initState();
 
     getNameSharedPreference();
+
+    // get location when the page loads
+    getLocation();
+    Timer.periodic(const Duration(minutes: 10), (timer) {
+      // put device location after per 15 minutes
+      getLocation();
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
     getLocation();
   }
 
@@ -44,24 +60,39 @@ class _TabsBottomState extends State<TabsBottom> {
   Future<void> getLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
 
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
-      debugPrint('Location Access Denied');
-      await Geolocator.requestPermission();
-      Position currentPosition = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.best);
-      universalLat = currentPosition.latitude;
-      universaLng = currentPosition.longitude;
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        print("Location permission denied");
+      }
     } else {
       Position currentPosition = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.best);
-      universalLat = currentPosition.latitude;
-      universaLng = currentPosition.longitude;
-      debugPrint(
-          "Latitude: ${universalLat.toString()} , Longitude: ${universaLng.toString()}");
+      universalLat = 16.397634859397915;
+      universaLng = 74.191539028536;
+      debugPrint("Latitude: $universalLat , Longitude: $universaLng");
+      putLocation(lat: universalLat!, lng: universaLng!);
     }
-    // Navigator.of(context).pop();
-   
+    if (permission == LocationPermission.deniedForever) {
+      print("Location permission is denied forever");
+    }
+  }
+
+  Future<void> putLocation({required double lat, required double lng}) async {
+    var reqBody = {"latitude": lat, "longitude": lng};
+
+    var response = await http.put(
+      Uri.parse(putDeviceLocationUrl),
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer ${widget.token}',
+      },
+      body: jsonEncode(reqBody),
+    );
+
+    var jsonResponse = jsonDecode(response.body);
+
+    debugPrint("When the app started: ${jsonResponse['message']}");
   }
 
   void onSelectedTab(int index) {
@@ -129,7 +160,7 @@ class _TabsBottomState extends State<TabsBottom> {
   Widget build(BuildContext context) {
     Widget activePage = HomeScreen(
       token: widget.token,
-      userName: userName!,
+      userName: userName ?? "",
     );
 
     if (_currentIndx == 1) {

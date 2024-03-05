@@ -9,8 +9,8 @@ import 'package:user_app/api_urls/config.dart';
 import 'package:http/http.dart' as http;
 import 'package:user_app/small_widgets/custom_dialogs/custom_show_dialog.dart';
 
-class OperationDetailsWidget extends StatelessWidget {
-  const OperationDetailsWidget({
+class ProgramEventDetails extends StatelessWidget {
+  const ProgramEventDetails({
     super.key,
     required this.eventName,
     required this.eventDescription,
@@ -93,7 +93,7 @@ class OperationDetailsWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Rescue Operation Details',
+            'Events Details',
             style: GoogleFonts.mulish().copyWith(
               fontWeight: FontWeight.bold,
               fontSize: 25,
@@ -102,128 +102,138 @@ class OperationDetailsWidget extends StatelessWidget {
           const SizedBox(
             height: 21,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Operation Name'.toUpperCase(),
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 18,
-                ),
-              ),
-              Text(
-                eventName,
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 15,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 11,
-          ),
-          Text(
-            'DESCRIPTION: $eventDescription',
-            style: GoogleFonts.mulish().copyWith(
-              fontWeight: FontWeight.normal,
-              fontSize: 16,
-            ),
-          ),
-          const SizedBox(
-            height: 21,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'TEAM NAME',
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 18,
-                ),
-              ),
-              Text(
-                agencyName,
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 15,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 21,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'EVENT DATE',
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 18,
-                ),
-              ),
-              Text(
-                DateFormat('dd/MM/yy').format(DateTime.parse(eventDate)),
-                style: GoogleFonts.plusJakartaSans().copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: (themeData.brightness == Brightness.light)
-                      ? const Color.fromARGB(255, 224, 28, 14)
-                      : Theme.of(context).colorScheme.onBackground,
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 21,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'LOCATION',
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 18,
-                ),
-              ),
-              Text(
-                locality,
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 15,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 21,
-          ),
-          const Spacer(),
-          const Divider(thickness: 0.2),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 20, top: 10),
-              child: SizedBox(
-                width: 200,
-                height: 40,
-                child: ElevatedButton(
-                  onPressed: () {
-                    registerForEvent(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Theme.of(context).colorScheme.primary,
-                    backgroundColor: const Color(0xff1E232C),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Event Name'.toUpperCase(),
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        eventName,
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
                   ),
-                  child: const Text(
-                    'REGISTER',
-                    style: TextStyle(fontSize: 16),
+                  const SizedBox(
+                    height: 11,
                   ),
-                ),
+                  Text(
+                    'DESCRIPTION: $eventDescription',
+                    style: GoogleFonts.mulish().copyWith(
+                      fontWeight: FontWeight.normal,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 21,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'TEAM NAME',
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        agencyName,
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 21,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'EVENT DATE',
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        DateFormat('dd/MM/yy')
+                            .format(DateTime.parse(eventDate)),
+                        style: GoogleFonts.plusJakartaSans().copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: (themeData.brightness == Brightness.light)
+                              ? const Color.fromARGB(255, 224, 28, 14)
+                              : Theme.of(context).colorScheme.onBackground,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 21,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'LOCATION',
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        locality,
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 31,
+                  ),
+                  const Divider(thickness: 0.2),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 20, top: 10),
+                      child: SizedBox(
+                        width: 200,
+                        height: 40,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            registerForEvent(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            backgroundColor: const Color(0xff1E232C),
+                          ),
+                          child: const Text(
+                            'REGISTER',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

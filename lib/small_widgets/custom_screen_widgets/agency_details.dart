@@ -57,192 +57,204 @@ class AgencyDetails extends StatelessWidget {
           const SizedBox(
             height: 10,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Agency Name'.toUpperCase(),
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 15,
-                ),
-              ),
-              Text(
-                agencyName,
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Email'.toUpperCase(),
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 15,
-                ),
-              ),
-              Text(
-                agencyEmail,
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Representative Name'.toUpperCase(),
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 15,
-                ),
-              ),
-              Text(
-                representativeName,
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Address'.toUpperCase(),
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 15,
-                ),
-              ),
-              Text(
-                agencyAddress,
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Rescue Operations'.toUpperCase(),
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 15,
-                ),
-              ),
-              Text(
-                rescueOperations.toString(),
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Events Organized'.toUpperCase(),
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 15,
-                ),
-              ),
-              Text(
-                eventsOrganized.toString(),
-                style: GoogleFonts.mulish().copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Row(
-            children: [
-              const Icon(
-                Icons.star_border_outlined,
-                size: 30,
-                color: Colors.blue,
-              ),
-              const SizedBox(
-                width: 11,
-              ),
-              Column(
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Agency Phone'.toUpperCase(),
-                    style: GoogleFonts.mulish().copyWith(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 15,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Agency Name'.toUpperCase(),
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 15,
+                        ),
+                      ),
+                      Text(
+                        agencyName,
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    agencyPhone.toString(),
-                    style: GoogleFonts.mulish().copyWith(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Email'.toUpperCase(),
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 15,
+                        ),
+                      ),
+                      Text(
+                        agencyEmail,
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Representative Name'.toUpperCase(),
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 15,
+                        ),
+                      ),
+                      Text(
+                        representativeName,
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Address'.toUpperCase(),
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 15,
+                        ),
+                      ),
+                      Text(
+                        agencyAddress,
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Rescue Operations'.toUpperCase(),
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 15,
+                        ),
+                      ),
+                      Text(
+                        rescueOperations.toString(),
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Events Organized'.toUpperCase(),
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 15,
+                        ),
+                      ),
+                      Text(
+                        eventsOrganized.toString(),
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.star_border_outlined,
+                        size: 30,
+                        color: Colors.blue,
+                      ),
+                      const SizedBox(
+                        width: 11,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Agency Phone'.toUpperCase(),
+                            style: GoogleFonts.mulish().copyWith(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                            ),
+                          ),
+                          Text(
+                            agencyPhone.toString(),
+                            style: GoogleFonts.mulish().copyWith(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  // const Divider(thickness: 0.2),
+                  const SizedBox(
+                    height: 21,
+                  ),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 20, top: 10),
+                      child: SizedBox(
+                        width: 200,
+                        height: 40,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            await launchPhoneDial(
+                              phoneNo: agencyPhone,
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            backgroundColor: const Color(0xff1E232C),
+                          ),
+                          child: const Text(
+                            'CALL',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
-              ),
-            ],
-          ),
-          // const Divider(thickness: 0.2),
-          const Spacer(),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 20, top: 10),
-              child: SizedBox(
-                width: 200,
-                height: 40,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    await launchPhoneDial(
-                      phoneNo: agencyPhone,
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Theme.of(context).colorScheme.primary,
-                    backgroundColor: const Color(0xff1E232C),
-                  ),
-                  child: const Text(
-                    'CALL',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
               ),
             ),
           ),

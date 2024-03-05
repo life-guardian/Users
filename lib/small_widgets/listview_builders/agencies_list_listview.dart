@@ -44,7 +44,7 @@ class AgenciesListListview extends StatelessWidget {
                     Navigator.of(context).push(
                       CustomSlideTransition(
                         direction: AxisDirection.left,
-                        child: OperationDetailsScreen(
+                        child: DetailsScreen(
                             eventId: alertData.sId!,
                             token: token,
                             screenType: 'AgencyDetails'),

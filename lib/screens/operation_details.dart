@@ -10,8 +10,8 @@ import 'package:user_app/api_urls/config.dart';
 import 'package:user_app/small_widgets/custom_screen_widgets/agency_details.dart';
 import 'package:user_app/small_widgets/custom_screen_widgets/operation_details_widget.dart';
 
-class OperationDetailsScreen extends StatefulWidget {
-  const OperationDetailsScreen({
+class DetailsScreen extends StatefulWidget {
+  const DetailsScreen({
     super.key,
     required this.eventId,
     required this.token,
@@ -23,10 +23,10 @@ class OperationDetailsScreen extends StatefulWidget {
   final token;
 
   @override
-  State<OperationDetailsScreen> createState() => _OperationDetailsScreenState();
+  State<DetailsScreen> createState() => _DetailsScreenState();
 }
 
-class _OperationDetailsScreenState extends State<OperationDetailsScreen> {
+class _DetailsScreenState extends State<DetailsScreen> {
   Widget activeScreen = const Center(
     child: CircularProgressIndicator(
       color: Colors.grey,
@@ -55,12 +55,11 @@ class _OperationDetailsScreenState extends State<OperationDetailsScreen> {
     } else if (widget.screenType == 'AgencyDetails') {
       // code here for agencydetails screen
       getAgencyDetails();
-
-      setState(() {});
     }
   }
 
   void getAgencyDetails() async {
+    print('$agencyDetailsUrl/${widget.eventId.toString()}');
     try {
       var response = await http.get(
         Uri.parse('$agencyDetailsUrl/${widget.eventId.toString()}'),
@@ -129,7 +128,7 @@ class _OperationDetailsScreenState extends State<OperationDetailsScreen> {
           debugPrint("Error fetching locality for coordinates: $coordinate");
         }
 
-        activeScreen = OperationDetailsWidget(
+        activeScreen = ProgramEventDetails(
           eventName: eventName!,
           eventDescription: eventDescription!,
           agencyName: agencyName!,

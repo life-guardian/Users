@@ -77,28 +77,30 @@ class AlertsListview extends StatelessWidget {
                           ),
                         ],
                       ),
-                      Column(
-                        // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            alertData.alertSeverity.toString(),
-                            style: GoogleFonts.plusJakartaSans().copyWith(
-                              color: Colors.grey,
-                              fontSize: 12,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              alertData.alertSeverity.toString(),
+                              style: GoogleFonts.plusJakartaSans().copyWith(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            height: 31,
-                          ),
-                          Text(
-                            alertData.agencyName.toString(),
-                            style: GoogleFonts.plusJakartaSans().copyWith(
-                              color: Colors.grey,
-                              fontSize: 12,
+                            const SizedBox(
+                              height: 31,
                             ),
-                          ),
-                        ],
+                            Text(
+                              alertData.agencyName.toString(),
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.plusJakartaSans().copyWith(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
