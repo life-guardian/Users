@@ -80,13 +80,13 @@ class _TabsBottomState extends ConsumerState<TabsBottom> {
     } else {
       Position currentPosition = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.best);
-      universalLat = 16.397634859397915;
-      universaLng = 74.191539028536;
+      universalLat = currentPosition.latitude;
+      universaLng = currentPosition.longitude;
       debugPrint("Latitude: $universalLat , Longitude: $universaLng");
       putLocation(lat: universalLat!, lng: universaLng!);
     }
     if (permission == LocationPermission.deniedForever) {
-      print("Location permission is denied forever");
+      debugPrint("Location permission is denied forever");
     }
   }
 
@@ -102,9 +102,7 @@ class _TabsBottomState extends ConsumerState<TabsBottom> {
       body: jsonEncode(reqBody),
     );
 
-    var jsonResponse = jsonDecode(response.body);
-
-    debugPrint("When the app started: ${jsonResponse['message']}");
+    // jsonDecode(response.body);
 
     setState(() {
       dataLoaded = true;
