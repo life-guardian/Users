@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:user_app/models/alerts.dart';
+import 'package:user_app/providers/alert_providert.dart';
 
 class AlertsListview extends StatelessWidget {
   const AlertsListview({
     super.key,
-    required this.list,
+    required this.ref,
   });
-  final List<Alerts> list;
+
+  final WidgetRef ref;
 
   @override
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
-    return list.isEmpty
+    final alertsList = ref.watch(alertsProvider);
+    return alertsList.isEmpty
         ? Center(
             child: Text(
               'No data found, Sorry! 😔',
@@ -24,9 +28,9 @@ class AlertsListview extends StatelessWidget {
             ),
           )
         : ListView.builder(
-            itemCount: list.length,
+            itemCount: alertsList.length,
             itemBuilder: (context, index) {
-              final alertData = list.elementAt(index);
+              final alertData = alertsList.elementAt(index);
               return Card(
                 elevation: 3,
                 shape: RoundedRectangleBorder(
@@ -77,28 +81,30 @@ class AlertsListview extends StatelessWidget {
                           ),
                         ],
                       ),
-                      Column(
-                        // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            alertData.alertSeverity.toString(),
-                            style: GoogleFonts.plusJakartaSans().copyWith(
-                              color: Colors.grey,
-                              fontSize: 12,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              alertData.alertSeverity.toString(),
+                              style: GoogleFonts.plusJakartaSans().copyWith(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            height: 31,
-                          ),
-                          Text(
-                            alertData.agencyName.toString(),
-                            style: GoogleFonts.plusJakartaSans().copyWith(
-                              color: Colors.grey,
-                              fontSize: 12,
+                            const SizedBox(
+                              height: 31,
                             ),
-                          ),
-                        ],
+                            Text(
+                              alertData.agencyName.toString(),
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.plusJakartaSans().copyWith(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),

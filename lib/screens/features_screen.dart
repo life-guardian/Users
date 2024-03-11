@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_app/api_urls/config.dart';
@@ -10,67 +12,83 @@ import 'package:user_app/models/alerts.dart';
 import 'package:http/http.dart' as http;
 import 'package:user_app/models/nearby_events.dart';
 import 'package:user_app/models/registered_events.dart';
+import 'package:user_app/providers/alert_providert.dart';
+import 'package:user_app/providers/program_events_provider.dart';
 import 'package:user_app/small_widgets/custom_screen_widgets/search_agency.dart';
 import 'package:user_app/small_widgets/listview_builders/alerts_listview.dart';
 import 'package:user_app/small_widgets/listview_builders/nearby_events_listview.dart';
 import 'package:user_app/small_widgets/listview_builders/registered_events_listview.dart';
 
-class FeaturesScreen extends StatefulWidget {
+class FeaturesScreen extends ConsumerStatefulWidget {
   const FeaturesScreen({
     super.key,
     required this.token,
     required this.screenType,
+    required this.username,
   });
   final token;
   final String screenType;
+  final String username;
 
   @override
-  State<FeaturesScreen> createState() => _FeaturesScreenState();
+  ConsumerState<FeaturesScreen> createState() => _FeaturesScreenState();
 }
 
-class _FeaturesScreenState extends State<FeaturesScreen> {
+class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
   List<Alerts> alertsData = [];
   List<NearbyEvents> nearbyEvents = [];
   List<RegisteredEvents> registeredEvents = [];
   String filterText = 'Upcoming Nearby Events';
 
-  Widget activeWidget = const Center(
-    child: CircularProgressIndicator(
-      color: Colors.grey,
-    ),
-  );
+  late Widget activeWidget;
 
   @override
   void initState() {
     super.initState();
+
     if (widget.screenType == 'Alerts') {
-      getAlertsData().then((value) => {
-            setState(() {
-              alertsData.addAll(value);
-              activeWidget = AlertsListview(list: alertsData);
-            })
-          });
+      alertsProviderActiveWidget();
+      getAlertsData();
     } else if (widget.screenType == 'ProgramEvents') {
-      getNearByEventsData().then((value) => {
-            setState(() {
-              nearbyEvents.addAll(value);
-              activeWidget = NearbyEventsListview(
-                list: nearbyEvents,
-                token: widget.token,
-              );
-            })
-          });
-      getRegisteredEventsData().then((value) => {
-            registeredEvents.addAll(value),
-          });
+      // this is to check if provider is not empty
+      nearbyEventsProviderActiveWidget();
+      // this to get updated data from server
+      getNearByEventsData();
+      getRegisteredEventsData();
     } else if (widget.screenType == 'SearchAgency') {
       activeWidget = SearchAgencyWidget(
+        userName: widget.username,
         token: widget.token,
       );
     }
   }
 
-  Future<List<NearbyEvents>> getNearByEventsData() async {
+  void alertsProviderActiveWidget() {
+    activeWidget = ref.read(alertsProvider).isNotEmpty
+        ? AlertsListview(ref: ref)
+        : const Center(
+            child: CircularProgressIndicator(
+              color: Colors.grey,
+            ),
+          );
+  }
+
+  void nearbyEventsProviderActiveWidget() {
+    activeWidget = ref.read(nearbyEventsProvider).isNotEmpty
+        ? NearbyEventsListview(
+            token: widget.token,
+            onTap: getRegisteredEventsData,
+            ref: ref,
+            userName: widget.username,
+          )
+        : const Center(
+            child: CircularProgressIndicator(
+              color: Colors.grey,
+            ),
+          );
+  }
+
+  Future<void> getNearByEventsData() async {
     var response = await http.get(
       Uri.parse(nearbyEventsUrl),
       headers: {
@@ -89,10 +107,19 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
       }
     }
 
-    return data;
+    ref.read(nearbyEventsProvider.notifier).addList(data);
+
+    setState(() {
+      activeWidget = NearbyEventsListview(
+        ref: ref,
+        token: widget.token,
+        onTap: getRegisteredEventsData,
+        userName: widget.username,
+      );
+    });
   }
 
-  Future<List<RegisteredEvents>> getRegisteredEventsData() async {
+  Future<void> getRegisteredEventsData() async {
     var response = await http.get(
       Uri.parse(userRegeteredEventsUrl),
       headers: {
@@ -111,10 +138,10 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
       }
     }
 
-    return data;
+    ref.read(registeredEventsProvider.notifier).addList(data);
   }
 
-  Future<List<Alerts>> getAlertsData() async {
+  Future<void> getAlertsData() async {
     var response = await http.get(
       Uri.parse(alertUrl),
       headers: {
@@ -133,7 +160,10 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
       }
     }
 
-    return getEventsLocality(data: data);
+    setState(() {
+      ref.read(alertsProvider.notifier).addList(data);
+      activeWidget = AlertsListview(ref: ref);
+    });
   }
 
   Future<List<Alerts>> getEventsLocality({required List<Alerts> data}) async {
@@ -171,6 +201,8 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
     return Scaffold(
+      resizeToAvoidBottomInset:
+          widget.screenType == 'SearchAgency' ? false : true,
       body: SafeArea(
         child: Column(
           children: [
@@ -195,7 +227,7 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
                         height: 5,
                       ),
                       Text(
-                        'userName',
+                        widget.username!,
                         // email,
                         style: GoogleFonts.plusJakartaSans().copyWith(
                           fontSize: 18,
@@ -290,14 +322,16 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
                                         'Upcoming Nearby Events') {
                                       filterText = 'Registered Events';
                                       activeWidget = RegisteredEventsListview(
-                                        list: registeredEvents,
+                                        ref: ref,
                                         token: widget.token,
                                       );
                                       // set active widget to registered events screen here
                                     } else {
                                       filterText = 'Upcoming Nearby Events';
                                       activeWidget = NearbyEventsListview(
-                                        list: nearbyEvents,
+                                        ref: ref,
+                                        userName: widget.username,
+                                        onTap: getRegisteredEventsData,
                                         token: widget.token,
                                       );
                                     }

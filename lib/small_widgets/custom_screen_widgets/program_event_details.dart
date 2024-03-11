@@ -1,44 +1,91 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:url_launcher/url_launcher.dart';
+// ignore_for_file: use_build_context_synchronously, prefer_typing_uninitialized_variables
 
-class AgencyDetails extends StatelessWidget {
-  const AgencyDetails({
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:user_app/api_urls/config.dart';
+import 'package:http/http.dart' as http;
+import 'package:user_app/small_widgets/custom_dialogs/custom_show_dialog.dart';
+
+class ProgramEventDetails extends StatelessWidget {
+  const ProgramEventDetails({
     super.key,
+    required this.eventName,
+    required this.eventDescription,
     required this.agencyName,
-    required this.agencyEmail,
-    required this.representativeName,
-    required this.agencyAddress,
-    required this.rescueOperations,
-    required this.eventsOrganized,
-    required this.agencyPhone,
+    required this.eventDate,
+    required this.locality,
+    required this.eventId,
+    required this.token,
   });
+
+  final String eventName;
+  final String eventDescription;
   final String agencyName;
-  final String agencyEmail;
-  final String representativeName;
-  final String agencyAddress;
-  final int rescueOperations;
-  final int eventsOrganized;
-  final int agencyPhone;
+  final String eventDate;
+  final String locality;
+  final String eventId;
+  final token;
+
+  // final void Function() registerForEvent;
+
+  void registerForEvent(BuildContext context) async {
+    showDialog(
+      context: context,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(
+          color: Colors.grey,
+        ),
+      ),
+    );
+
+    var reqBody = {
+      "eventId": eventId,
+    };
+
+    try {
+      var response = await http.put(
+        Uri.parse(registerEventUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(reqBody),
+      );
+
+      var jsonResponse = jsonDecode(response.body);
+      var message = jsonResponse['message'];
+
+      if (response.statusCode == 200) {
+        Navigator.of(context).pop();
+        Navigator.of(context).pop(true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+          ),
+        );
+      } else {
+        Navigator.of(context).pop();
+        customShowDialog(
+          context: context,
+          titleText: "Ooops!",
+          contentText: message,
+        );
+      }
+    } catch (e) {
+      debugPrint("Registering Event Exception ${e.toString()}");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    Future<void> launchPhoneDial({required int phoneNo}) async {
-      final Uri url = Uri(
-        scheme: 'tel',
-        path: phoneNo.toString(),
-      );
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url);
-      } else {
-        debugPrint("Cannot launch phoneCall url");
-      }
-    }
-
-    // ThemeData themeData = Theme.of(context);
+    ThemeData themeData = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(
-        top: 15,
+        top: 25,
         left: 12,
         right: 12,
         bottom: 5,
@@ -48,14 +95,14 @@ class AgencyDetails extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Agency Details',
+            'Events Details',
             style: GoogleFonts.mulish().copyWith(
               fontWeight: FontWeight.bold,
               fontSize: 25,
             ),
           ),
           const SizedBox(
-            height: 10,
+            height: 21,
           ),
           Expanded(
             child: SingleChildScrollView(
@@ -66,169 +113,117 @@ class AgencyDetails extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Agency Name'.toUpperCase(),
+                        'Event Name'.toUpperCase(),
                         style: GoogleFonts.mulish().copyWith(
                           fontWeight: FontWeight.w900,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        eventName,
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w500,
                           fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 11,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'DESCRIPTION'.toUpperCase(),
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        eventDescription,
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 21,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'TEAM NAME',
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 18,
                         ),
                       ),
                       Text(
                         agencyName,
                         style: GoogleFonts.mulish().copyWith(
                           fontWeight: FontWeight.w500,
-                          fontSize: 14,
+                          fontSize: 15,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(
-                    height: 8,
+                    height: 21,
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Email'.toUpperCase(),
+                        'EVENT DATE',
                         style: GoogleFonts.mulish().copyWith(
                           fontWeight: FontWeight.w900,
-                          fontSize: 15,
+                          fontSize: 18,
                         ),
                       ),
                       Text(
-                        agencyEmail,
-                        style: GoogleFonts.mulish().copyWith(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
+                        DateFormat('dd/MM/yy')
+                            .format(DateTime.parse(eventDate)),
+                        style: GoogleFonts.plusJakartaSans().copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: (themeData.brightness == Brightness.light)
+                              ? const Color.fromARGB(255, 224, 28, 14)
+                              : Theme.of(context).colorScheme.onBackground,
+                          fontSize: 16,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(
-                    height: 8,
+                    height: 21,
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Representative Name'.toUpperCase(),
+                        'LOCATION',
                         style: GoogleFonts.mulish().copyWith(
                           fontWeight: FontWeight.w900,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        locality,
+                        style: GoogleFonts.mulish().copyWith(
+                          fontWeight: FontWeight.w500,
                           fontSize: 15,
                         ),
                       ),
-                      Text(
-                        representativeName,
-                        style: GoogleFonts.mulish().copyWith(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                        ),
-                      ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Address'.toUpperCase(),
-                        style: GoogleFonts.mulish().copyWith(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 15,
-                        ),
-                      ),
-                      Text(
-                        agencyAddress,
-                        style: GoogleFonts.mulish().copyWith(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Rescue Operations'.toUpperCase(),
-                        style: GoogleFonts.mulish().copyWith(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 15,
-                        ),
-                      ),
-                      Text(
-                        rescueOperations.toString(),
-                        style: GoogleFonts.mulish().copyWith(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Events Organized'.toUpperCase(),
-                        style: GoogleFonts.mulish().copyWith(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 15,
-                        ),
-                      ),
-                      Text(
-                        eventsOrganized.toString(),
-                        style: GoogleFonts.mulish().copyWith(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.star_border_outlined,
-                        size: 30,
-                        color: Colors.blue,
-                      ),
-                      const SizedBox(
-                        width: 11,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Agency Phone'.toUpperCase(),
-                            style: GoogleFonts.mulish().copyWith(
-                              fontWeight: FontWeight.w900,
-                              fontSize: 15,
-                            ),
-                          ),
-                          Text(
-                            agencyPhone.toString(),
-                            style: GoogleFonts.mulish().copyWith(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  // const Divider(thickness: 0.2),
                   SizedBox(
                     height: MediaQuery.of(context).size.height / 8,
                   ),
+                  const Divider(thickness: 0.2),
                   Center(
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 20, top: 10),
@@ -236,10 +231,8 @@ class AgencyDetails extends StatelessWidget {
                         width: 200,
                         height: 40,
                         child: ElevatedButton(
-                          onPressed: () async {
-                            await launchPhoneDial(
-                              phoneNo: agencyPhone,
-                            );
+                          onPressed: () {
+                            registerForEvent(context);
                           },
                           style: ElevatedButton.styleFrom(
                             foregroundColor:
@@ -247,7 +240,7 @@ class AgencyDetails extends StatelessWidget {
                             backgroundColor: const Color(0xff1E232C),
                           ),
                           child: const Text(
-                            'CALL',
+                            'REGISTER',
                             style: TextStyle(fontSize: 16),
                           ),
                         ),

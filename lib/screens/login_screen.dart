@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:user_app/screens/tabs.dart';
 import 'package:user_app/small_widgets/custom_dialogs/custom_show_dialog.dart';
 import 'package:user_app/api_urls/config.dart';
@@ -31,6 +32,13 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     initSharedPrefs();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    userLoginEmail.dispose();
+    userPassword.dispose();
   }
 
   void initSharedPrefs() async {
@@ -96,13 +104,15 @@ class _LoginScreenState extends State<LoginScreen> {
       body: jsonEncode(reqBody),
     );
 
+    String? userName;
     var jsonResponse = jsonDecode(response.body);
-    var message = jsonResponse['message'];
+    String message = jsonResponse['message'];
     if (response.statusCode == 200) {
+      userName = jsonResponse['data']['name'];
       //storin user login data in local variable
       var myToken = jsonResponse['token'];
       prefs.setString('token', myToken);
-
+      prefs.setString('username', userName!);
       // Navigator.of(context).pop();
       _navigateToHomeScreen(token: myToken);
       //success
@@ -114,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
       buttonPressed = await customShowDialog(
         context: context,
         titleText: 'Something went wrong',
-        contentText: message,
+        contentText: message!,
       );
       buttonPressed = false;
       return;
@@ -129,7 +139,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         elevation: 0,
@@ -162,117 +171,121 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Column(
-            // mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset('assets/images/disasterImage2.jpg'),
-              const SizedBox(
-                height: 12,
-              ),
-              Text(
-                'Life Guardian',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onBackground,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 20,
-                  shadows: const [
-                    Shadow(
-                      offset: Offset(0.0, 7.0),
-                      blurRadius: 15.0,
-                      color: Color.fromARGB(57, 0, 0, 0),
-                    ),
-                  ],
+          child: SingleChildScrollView(
+            child: Column(
+              // mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/images/disasterImage2.jpg'),
+                const SizedBox(
+                  height: 12,
                 ),
-              ),
-              const SizedBox(
-                height: 31,
-              ),
-              SingleChildScrollView(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      Text(
-                        'Welcome back! Glad to see you, Stay Safe!',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onBackground,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30,
-                        ),
+                Text(
+                  'Life Guardian',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onBackground,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 20,
+                    shadows: const [
+                      Shadow(
+                        offset: Offset(0.0, 7.0),
+                        blurRadius: 15.0,
+                        color: Color.fromARGB(57, 0, 0, 0),
                       ),
-                      const SizedBox(
-                        height: 31,
-                      ),
-                      TextFieldWidget(
-                        labelText: 'Email / Phone',
-                        controllerText: userLoginEmail,
-                        checkValidation: (value) =>
-                            _validateTextField(value, 'Email / Phone'),
-                      ),
-                      const SizedBox(
-                        height: 12,
-                      ),
-                      TextFieldWidget(
-                        labelText: 'Password',
-                        controllerText: userPassword,
-                        checkValidation: (value) =>
-                            _validateTextField(value, 'Password'),
-                        obsecureIcon: true,
-                        hideText: true,
-                      ),
-                      const SizedBox(
-                        height: 12,
-                      ),
-                      const SizedBox(
-                        height: 31,
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 55,
-                        child: ElevatedButton(
-                          onPressed: _submitButton,
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: const Color(0xff1E232C),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 31,
+                ),
+                SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Text(
+                          'Welcome back! Glad to see you, Stay Safe!',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onBackground,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 30,
                           ),
-                          child: isLogging
-                              ? const Center(
-                                  child: CircularProgressIndicator(),
-                                )
-                              : const Text('Login'),
+                        ),
+                        const SizedBox(
+                          height: 31,
+                        ),
+                        TextFieldWidget(
+                          labelText: 'Email / Phone',
+                          controllerText: userLoginEmail,
+                          checkValidation: (value) =>
+                              _validateTextField(value, 'Email / Phone'),
+                        ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        TextFieldWidget(
+                          labelText: 'Password',
+                          controllerText: userPassword,
+                          checkValidation: (value) =>
+                              _validateTextField(value, 'Password'),
+                          obsecureIcon: true,
+                          hideText: true,
+                        ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        const SizedBox(
+                          height: 31,
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 55,
+                          child: ElevatedButton(
+                            onPressed: _submitButton,
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: const Color(0xff1E232C),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: isLogging
+                                ? const Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : const Text('Login'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 21,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Don\'t have an account?',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      TextButton(
+                        onPressed: _goToRegisterPage,
+                        child: const Text(
+                          'Register Now',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Don\'t have an account?',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    TextButton(
-                      onPressed: _goToRegisterPage,
-                      child: const Text(
-                        'Register Now',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

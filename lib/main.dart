@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:user_app/screens/tabs.dart';
 import 'package:user_app/screens/welcome_screen.dart';
 import 'package:user_app/theme/custom_theme.dart';
@@ -11,9 +12,11 @@ void main() async {
   final myToken = prefs.getString('token');
 
   runApp(
-    MyApp(
-      token: myToken,
-      // prefs: myToken`,
+    ProviderScope(
+      child: MyApp(
+        token: myToken,
+        // prefs: myToken`,
+      ),
     ),
   );
 }
@@ -41,7 +44,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Angencies',
+      title: 'Users',
       theme: lightTheme,
       darkTheme: darkTheme,
       home: startScreen(),

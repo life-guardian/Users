@@ -27,96 +27,100 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
-
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              margin: const EdgeInsets.only(top: 40),
-              width: double.infinity,
-              child: Image.asset('assets/images/disasterImage1.png'),
-            ),
-            Image.asset('assets/images/disasterImage2.jpg'),
-            const SizedBox(
-              height: 12,
-            ),
-            Text(
-              'Life Guardian',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                shadows: const [
-                  Shadow(
-                    offset: Offset(0.0, 7.0),
-                    blurRadius: 15.0,
-                    color: Color.fromARGB(57, 0, 0, 0),
-                  ),
-                ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 40),
+                width: double.infinity,
+                child: Image.asset('assets/images/disasterImage1.png'),
               ),
-            ),
-            const SizedBox(
-              height: 31,
-            ),
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                onPressed: () {
-                  _login(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: const Color(0xff1E232C),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+              Image.asset('assets/images/disasterImage2.jpg'),
+              const SizedBox(
+                width: double.infinity,
+                height: 12,
+              ),
+              Text(
+                'Life Guardian',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  shadows: const [
+                    Shadow(
+                      offset: Offset(0.0, 7.0),
+                      blurRadius: 15.0,
+                      color: Color.fromARGB(57, 0, 0, 0),
+                    ),
+                  ],
                 ),
-                child: const Text('Login'),
               ),
-            ),
-            const SizedBox(
-              height: 18,
-            ),
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: OutlinedButton(
-                onPressed: () {
-                  _register(context);
-                },
-                style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),),
-                  foregroundColor: (themeData.brightness == Brightness.light)
-                      ? const Color(0xff1E232C)
-                      : Colors.white,
-                  side: BorderSide(
-                    color: (themeData.brightness == Brightness.light)
+              const SizedBox(
+                height: 31,
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: () {
+                    _login(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: const Color(0xff1E232C),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text('Login'),
+                ),
+              ),
+              const SizedBox(
+                height: 18,
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: OutlinedButton(
+                  onPressed: () {
+                    _register(context);
+                  },
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    foregroundColor: (themeData.brightness == Brightness.light)
                         ? const Color(0xff1E232C)
                         : Colors.white,
+                    side: BorderSide(
+                      color: (themeData.brightness == Brightness.light)
+                          ? const Color(0xff1E232C)
+                          : Colors.white,
+                    ),
+                  ),
+                  child: const Text("Register"),
+                ),
+              ),
+              const SizedBox(
+                height: 21,
+              ),
+              Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                child: const Text(
+                  'Jai Hind !',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                child: const Text("Register"),
               ),
-            ),
-            const Spacer(),
-            Container(
-              margin: const EdgeInsets.only(bottom: 10),
-              child: const Text(
-                'Jai Hind !',
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -38,6 +38,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     initSharedPrefs();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    name.dispose();
+    email.dispose();
+    phoneNumber.dispose();
+    address.dispose();
+    password.dispose();
+    userConfirmPassword.dispose();
+  }
+
   void initSharedPrefs() async {
     prefs = await SharedPreferences.getInstance();
   }
@@ -135,7 +146,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       "phoneNumber": phoneNumber.text.toString(),
       "email": email.text.toString(),
       "address": address.text.toString(),
-      "locationCoordinates": ["18.9111", "76.9931"]
+      // "locationCoordinates": ["18.9111", "76.9931"]
     };
 
     var response = await http.post(
@@ -150,6 +161,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (response.statusCode == 200) {
       var myToken = jsonResponse['token'];
       prefs.setString('token', myToken);
+      String? userName = jsonResponse['data']['name'];
+      prefs.setString('username', userName!);
       Navigator.of(context).pushReplacement(
         CustomSlideTransition(
           direction: AxisDirection.left,

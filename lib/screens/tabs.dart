@@ -1,7 +1,14 @@
 // ignore_for_file: prefer_typing_uninitialized_variables, use_build_context_synchronously
 
+import 'dart:async';
+import 'dart:convert';
+import 'dart:ffi';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:user_app/api_urls/config.dart';
+import 'package:user_app/providers/alert_providert.dart';
+import 'package:user_app/providers/program_events_provider.dart';
 import 'package:user_app/screens/home_screen.dart';
 import 'package:user_app/screens/login_screen.dart';
 import 'package:user_app/screens/user_account_details.dart';
@@ -10,53 +17,100 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class TabsBottom extends StatefulWidget {
-  const TabsBottom({super.key, required this.token});
+class TabsBottom extends ConsumerStatefulWidget {
+  const TabsBottom({
+    super.key,
+    required this.token,
+  });
   final token;
 
   @override
-  State<TabsBottom> createState() => _TabsBottomState();
+  ConsumerState<TabsBottom> createState() => _TabsBottomState();
 }
 
-class _TabsBottomState extends State<TabsBottom> {
+class _TabsBottomState extends ConsumerState<TabsBottom> {
   int _currentIndx = 0;
-  late String myToken;
+  bool dataLoaded = false;
+  Widget activePage = const Center(
+    child: CircularProgressIndicator(
+      color: Colors.grey,
+    ),
+  );
+
+  String? userName;
 
   @override
   void initState() {
     super.initState();
 
-    getToken();
+    getNameSharedPreference();
+
+    // get location when the page loads
     getLocation();
-    globalToken = widget.token;
+    Timer.periodic(const Duration(minutes: 10), (timer) {
+      // put device location after per 15 minutes
+      getLocation();
+    });
   }
 
-  Future<String> getLocation() async {
+  @override
+  void dispose() {
+    super.dispose();
+    getLocation();
+    ref.read(nearbyEventsProvider.notifier).clearData();
+    ref.read(registeredEventsProvider.notifier).clearData();
+    ref.read(alertsProvider.notifier).clearData();
+  }
+
+  Future<void> getNameSharedPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('username');
+    });
+  }
+
+  Future<void> getLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
 
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
-      debugPrint('Location Access Denied');
-      await Geolocator.requestPermission();
-      Position currentPosition = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.best);
-      universalLat = currentPosition.latitude;
-      universaLng = currentPosition.longitude;
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        print("Location permission denied");
+      }
     } else {
       Position currentPosition = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.best);
       universalLat = currentPosition.latitude;
       universaLng = currentPosition.longitude;
-      debugPrint(
-          "Latitude: ${universalLat.toString()} , Longitude: ${universaLng.toString()}");
+      debugPrint("Latitude: $universalLat , Longitude: $universaLng");
+      putLocation(lat: universalLat!, lng: universaLng!);
     }
-    // Navigator.of(context).pop();
-    return 'load screen';
+    if (permission == LocationPermission.deniedForever) {
+      debugPrint("Location permission is denied forever");
+    }
   }
 
-  void getToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.getString('token');
+  Future<void> putLocation({required double lat, required double lng}) async {
+    var reqBody = {"latitude": lat, "longitude": lng};
+
+    var response = await http.put(
+      Uri.parse(putDeviceLocationUrl),
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer ${widget.token}',
+      },
+      body: jsonEncode(reqBody),
+    );
+
+    // jsonDecode(response.body);
+
+    setState(() {
+      dataLoaded = true;
+      activePage = HomeScreen(
+        token: widget.token,
+        userName: userName ?? "",
+      );
+    });
   }
 
   void onSelectedTab(int index) {
@@ -84,19 +138,20 @@ class _TabsBottomState extends State<TabsBottom> {
     showCircularProgressBar();
 
     try {
-      await http.get(
-        Uri.parse(loginUrl),
-        headers: {
-          "Content-Type": "application/json",
-          'Authorization': 'Bearer ${widget.token}'
-        },
-      );
+      // await http.get(
+      //   Uri.parse(loginUrl),
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     'Authorization': 'Bearer ${widget.token}'
+      //   },
+      // );
       // var message;
       // if (response.statusCode == 200) {
       // var jsonResponse = jsonDecode(response.body);
       // message = jsonResponse['message'];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.remove('token');
+      prefs.remove('username');
       while (Navigator.canPop(context)) {
         Navigator.of(context).pop();
       }
@@ -121,15 +176,19 @@ class _TabsBottomState extends State<TabsBottom> {
 
   @override
   Widget build(BuildContext context) {
-    Widget activePage = HomeScreen(
-      token: widget.token,
-    );
+    if (dataLoaded) {
+      activePage = HomeScreen(
+        token: widget.token,
+        userName: userName ?? "",
+      );
+    }
 
     if (_currentIndx == 1) {
       activePage = UserAccountDetails(
         logoutUser: _logoutUser,
       );
     }
+
     return Scaffold(
       // backgroundColor: Colors.grey.shade200,
       backgroundColor: Theme.of(context).colorScheme.background,
