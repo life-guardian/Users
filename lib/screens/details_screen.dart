@@ -61,7 +61,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   }
 
   void getAgencyDetails() async {
-    print('$agencyDetailsUrl/${widget.eventId.toString()}');
+
     try {
       var response = await http.get(
         Uri.parse('$agencyDetailsUrl/${widget.eventId.toString()}'),
@@ -83,9 +83,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
         agencyPhone = jsonResponse['agencyPhone'];
       }
 
-      debugPrint(
-          '$agencyName/$agencyEmail/$representativeName/$agencyAddress/$rescueOperations/$eventsOrganized/$agencyPhone');
-      // buid list
       activeScreen = AgencyDetails(
           agencyName: agencyName!,
           agencyEmail: agencyEmail!,
@@ -125,7 +122,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
               await placemarkFromCoordinates(coordinate![1], coordinate![0]);
           Placemark placemark = placemarks[0];
           locality = placemark.locality;
-          debugPrint(locality);
+          
         } catch (error) {
           debugPrint("Error fetching locality for coordinates: $coordinate");
         }

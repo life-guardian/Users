@@ -1,7 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:user_app/constants/sizes.dart';
+import 'package:user_app/custom_functions/validate_textfields.dart';
 import 'package:user_app/screens/tabs.dart';
 import 'package:user_app/small_widgets/custom_dialogs/custom_show_dialog.dart';
 import 'package:user_app/api_urls/config.dart';
@@ -43,13 +44,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void initSharedPrefs() async {
     prefs = await SharedPreferences.getInstance();
-  }
-
-  String? _validateTextField(value, String? label) {
-    if (value.isEmpty) {
-      return 'Please enter a $label';
-    }
-    return null;
   }
 
   void _goToRegisterPage() {
@@ -124,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
       buttonPressed = await customShowDialog(
         context: context,
         titleText: 'Something went wrong',
-        contentText: message!,
+        contentText: message,
       );
       buttonPressed = false;
       return;
@@ -138,6 +132,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    bool kIsMobile = (screenWidth <= mobileScreenWidth);
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
@@ -213,22 +209,28 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(
                           height: 31,
                         ),
-                        TextFieldWidget(
-                          labelText: 'Email / Phone',
-                          controllerText: userLoginEmail,
-                          checkValidation: (value) =>
-                              _validateTextField(value, 'Email / Phone'),
+                        SizedBox(
+                          width: !kIsMobile ? screenWidth / 2 : null,
+                          child: TextFieldWidget(
+                            labelText: 'Email / Phone',
+                            controllerText: userLoginEmail,
+                            checkValidation: (value) =>
+                                validateTextField(value, 'Email / Phone'),
+                          ),
                         ),
                         const SizedBox(
                           height: 12,
                         ),
-                        TextFieldWidget(
-                          labelText: 'Password',
-                          controllerText: userPassword,
-                          checkValidation: (value) =>
-                              _validateTextField(value, 'Password'),
-                          obsecureIcon: true,
-                          hideText: true,
+                        SizedBox(
+                          width: !kIsMobile ? screenWidth / 2 : null,
+                          child: TextFieldWidget(
+                            labelText: 'Password',
+                            controllerText: userPassword,
+                            checkValidation: (value) =>
+                                validateTextField(value, 'Password'),
+                            obsecureIcon: true,
+                            hideText: true,
+                          ),
                         ),
                         const SizedBox(
                           height: 12,
@@ -237,20 +239,25 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 31,
                         ),
                         SizedBox(
-                          width: double.infinity,
+                          width: !kIsMobile ? screenWidth / 4 : double.infinity,
                           height: 55,
                           child: ElevatedButton(
                             onPressed: _submitButton,
                             style: ElevatedButton.styleFrom(
                               foregroundColor: Colors.white,
-                              backgroundColor: const Color(0xff1E232C),
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.tertiary,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                             child: isLogging
                                 ? const Center(
-                                    child: CircularProgressIndicator(),
+                                    child: SizedBox(
+                                      height: 25,
+                                      width: 25,
+                                      child: CircularProgressIndicator(),
+                                    ),
                                   )
                                 : const Text('Login'),
                           ),

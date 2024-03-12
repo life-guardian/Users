@@ -1,11 +1,9 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:user_app/models/nearby_events.dart';
 import 'package:user_app/providers/program_events_provider.dart';
 import 'package:user_app/screens/details_screen.dart';
 import 'package:user_app/transitions_animations/custom_page_transition.dart';

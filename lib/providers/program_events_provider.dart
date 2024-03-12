@@ -11,8 +11,8 @@ class NearbyEventsNotifier extends StateNotifier<List<NearbyEvents>> {
     state = events;
   }
 
-  void clearData(){
-    state=[];
+  void clearData() {
+    state = [];
   }
 }
 
@@ -20,8 +20,6 @@ final nearbyEventsProvider =
     StateNotifierProvider<NearbyEventsNotifier, List<NearbyEvents>>((ref) {
   return NearbyEventsNotifier(ref: ref);
 });
-
-
 
 // Registered Events Provider
 
@@ -31,13 +29,14 @@ class RegisteredEventsNotifier extends StateNotifier<List<RegisteredEvents>> {
   void addList(List<RegisteredEvents> events) {
     state = events;
   }
-  void clearData(){
-    state=[];
+
+  void clearData() {
+    state = [];
   }
 }
 
 final registeredEventsProvider =
-    StateNotifierProvider<RegisteredEventsNotifier, List<RegisteredEvents>>((ref) {
+    StateNotifierProvider<RegisteredEventsNotifier, List<RegisteredEvents>>(
+        (ref) {
   return RegisteredEventsNotifier(ref: ref);
 });
-

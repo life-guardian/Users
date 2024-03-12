@@ -74,7 +74,7 @@ class AgenciesListListview extends StatelessWidget {
                             style: GoogleFonts.plusJakartaSans().copyWith(
                               fontWeight: FontWeight.w900,
                               fontSize: 17,
-                              color: Colors.black,
+                              color: Theme.of(context).colorScheme.onBackground,
                             ),
                           ),
                           const SizedBox(

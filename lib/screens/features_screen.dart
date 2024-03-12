@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_app/api_urls/config.dart';
+import 'package:user_app/constants/sizes.dart';
 import 'package:user_app/models/alerts.dart';
 import 'package:http/http.dart' as http;
 import 'package:user_app/models/nearby_events.dart';
@@ -160,6 +161,10 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
       }
     }
 
+    await getEventsLocality(data: data).then((alertListWithLocalities) {
+      data = alertListWithLocalities;
+    });
+
     setState(() {
       ref.read(alertsProvider.notifier).addList(data);
       activeWidget = AlertsListview(ref: ref);
@@ -172,8 +177,6 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
     for (var event in data) {
       coordinates.add(event.alertLocation!);
     }
-
-    // print(coordinates.toList());
 
     List<String> localities = [];
 
@@ -199,10 +202,13 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     ThemeData themeData = Theme.of(context);
+
     return Scaffold(
       resizeToAvoidBottomInset:
           widget.screenType == 'SearchAgency' ? false : true,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -227,7 +233,7 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
                         height: 5,
                       ),
                       Text(
-                        widget.username!,
+                        widget.username,
                         // email,
                         style: GoogleFonts.plusJakartaSans().copyWith(
                           fontSize: 18,
@@ -285,11 +291,12 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
             ),
             Expanded(
               child: Container(
+                width: double.infinity,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primary,
                   borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
+                    topLeft: Radius.circular(40),
+                    topRight: Radius.circular(40),
                   ),
                 ),
                 child: Padding(
@@ -345,11 +352,13 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
                             ],
                           ),
                         ),
-                      const SizedBox(
-                        height: 21,
-                      ),
                       Expanded(
-                        child: activeWidget,
+                        child: SizedBox(
+                          width: screenWidth > mobileScreenWidth
+                              ? screenWidth / 1.5
+                              : double.infinity,
+                          child: activeWidget,
+                        ),
                       ),
                     ],
                   ),
