@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:user_app/api_urls/config.dart';
+import 'package:user_app/constants/sizes.dart';
 import 'package:user_app/screens/login_screen.dart';
 import 'package:user_app/screens/register_succesful.dart';
 import 'package:user_app/small_widgets/custom_dialogs/custom_show_dialog.dart';
@@ -198,14 +199,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    bool kIsMobile = (screenWidth <= mobileScreenWidth);
+
     return Scaffold(
       // resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).colorScheme.background,
+      resizeToAvoidBottomInset: kIsMobile ? true : false,
+
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8),
           child: OutlinedButton(
             style: OutlinedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -229,129 +236,179 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: SizedBox(
-          child: Column(
-            children: [
-              Text(
-                'Hello! Register to get started',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onBackground,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30,
-                ),
+        child: !kIsMobile
+            ? SingleChildScrollView(
+                child: registerScreenWidget(
+                    screenHeight: screenHeight,
+                    screenWidth: screenWidth,
+                    kIsMobile: kIsMobile),
+              )
+            : registerScreenWidget(
+                screenHeight: screenHeight,
+                screenWidth: screenWidth,
+                kIsMobile: kIsMobile,
               ),
-              const SizedBox(
-                height: 31,
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Form(
-                    key: formKey,
-                    child: Column(
-                      children: [
-                        TextFieldWidget(
-                          labelText: 'Name',
-                          controllerText: name,
-                          checkValidation: (value) =>
-                              validateName(value, 'Name'),
-                        ),
-                        const SizedBox(
-                          height: 21,
-                        ),
-                        TextFieldWidget(
-                          labelText: 'Email',
-                          controllerText: email,
-                          checkValidation: (value) =>
-                              validateemail(value, 'email'),
-                        ),
-                        const SizedBox(
-                          height: 21,
-                        ),
-                        TextFieldWidget(
-                          labelText: 'Phone No',
-                          controllerText: phoneNumber,
-                          checkValidation: (value) =>
-                              validatePhoneNo(value, 'Phone Number'),
-                        ),
-                        const SizedBox(
-                          height: 21,
-                        ),
-                        TextFieldWidget(
-                          labelText: 'Address',
-                          controllerText: address,
-                          checkValidation: (value) =>
-                              validateTextField(value, 'Address'),
-                        ),
-                        const SizedBox(
-                          height: 21,
-                        ),
-                        TextFieldWidget(
-                          labelText: 'Password',
-                          controllerText: password,
-                          checkValidation: (value) =>
-                              validatePassword(value, 'Password'),
-                          hideText: true,
-                        ),
-                        const SizedBox(
-                          height: 21,
-                        ),
-                        TextFieldWidget(
-                          labelText: 'Confirm Password',
-                          controllerText: userConfirmPassword,
-                          checkValidation: (value) => validateConfirmPassword(
-                              value, 'Confirm Password'),
-                          hideText: true,
-                        ),
-                      ],
-                    ),
+      ),
+    );
+  }
+
+  Widget registerScreenWidget({
+    required double screenHeight,
+    required double screenWidth,
+    required bool kIsMobile,
+  }) {
+    return SizedBox(
+      child: Column(
+        children: [
+          Text(
+            'Hello! Register to get started',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onBackground,
+              fontWeight: FontWeight.bold,
+              fontSize: 30,
+            ),
+          ),
+          const SizedBox(
+            height: 31,
+          ),
+          kIsMobile
+              ? Expanded(
+                  child: registerScreenFormWidget(
+                    screenHeight: screenHeight,
+                    screenWidth: screenWidth,
+                    kIsMobile: kIsMobile,
                   ),
+                )
+              : registerScreenFormWidget(
+                  screenHeight: screenHeight,
+                  screenWidth: screenWidth,
+                  kIsMobile: kIsMobile,
+                ),
+          !kIsMobile
+              ? const SizedBox(
+                  height: 91,
+                )
+              : const SizedBox(
+                  height: 11,
+                ),
+          SizedBox(
+            width: !kIsMobile
+                ? screenWidth / 4
+                : MediaQuery.of(context).size.width,
+            height: 55,
+            child: ElevatedButton(
+              onPressed: submitForm,
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.tertiary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              const SizedBox(
-                height: 31,
-              ),
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: submitForm,
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: const Color(0xff1E232C),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: isLoging
-                      ? const Expanded(
-                          child: CircularProgressIndicator(),
-                        )
-                      : const Text('Register'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Already have an account?',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    TextButton(
-                      onPressed: goToLoginPage,
-                      child: const Text(
-                        'Login Now',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 16,
-                        ),
+              child: isLoging
+                  ? const Center(
+                      child: SizedBox(
+                        height: 25,
+                        width: 25,
+                        child: CircularProgressIndicator(),
                       ),
-                    ),
-                  ],
+                    )
+                  : const Text('Register'),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Already have an account?',
+                  style: TextStyle(fontSize: 16),
                 ),
-              ),
-            ],
+                TextButton(
+                  onPressed: goToLoginPage,
+                  child: const Text(
+                    'Login Now',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget registerScreenFormWidget(
+      {required double screenHeight,
+      required double screenWidth,
+      required bool kIsMobile}) {
+    return SizedBox(
+      height: screenHeight / 2,
+      child: SingleChildScrollView(
+        child: SizedBox(
+          width: !kIsMobile ? screenWidth / 2 : null,
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: [
+                TextFieldWidget(
+                  labelText: 'Name',
+                  controllerText: name,
+                  checkValidation: (value) => validateName(value, 'Name'),
+                ),
+                const SizedBox(
+                  height: 21,
+                ),
+                TextFieldWidget(
+                  labelText: 'Email',
+                  controllerText: email,
+                  checkValidation: (value) => validateemail(value, 'email'),
+                ),
+                const SizedBox(
+                  height: 21,
+                ),
+                TextFieldWidget(
+                  labelText: 'Phone No',
+                  controllerText: phoneNumber,
+                  checkValidation: (value) =>
+                      validatePhoneNo(value, 'Phone Number'),
+                ),
+                const SizedBox(
+                  height: 21,
+                ),
+                TextFieldWidget(
+                  labelText: 'Address',
+                  controllerText: address,
+                  checkValidation: (value) =>
+                      validateTextField(value, 'Address'),
+                ),
+                const SizedBox(
+                  height: 21,
+                ),
+                TextFieldWidget(
+                  labelText: 'Password',
+                  controllerText: password,
+                  checkValidation: (value) =>
+                      validatePassword(value, 'Password'),
+                  hideText: true,
+                ),
+                const SizedBox(
+                  height: 21,
+                ),
+                TextFieldWidget(
+                  labelText: 'Confirm Password',
+                  controllerText: userConfirmPassword,
+                  checkValidation: (value) =>
+                      validateConfirmPassword(value, 'Confirm Password'),
+                  hideText: true,
+                ),
+              ],
+            ),
           ),
         ),
       ),

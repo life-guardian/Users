@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:user_app/constants/sizes.dart';
 import 'package:user_app/large_widget/custom_card_widget.dart';
 import 'package:user_app/screens/features_screen.dart';
 import 'package:user_app/small_widgets/custom_text_widgets/custom_text_widget.dart';
@@ -39,6 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: Padding(
         padding:
@@ -70,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         text: formattedDate,
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xff040415),
+                        color: Theme.of(context).colorScheme.onBackground,
                       ),
                     ],
                   ),
@@ -93,6 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         : "Loading...",
                     fontSize: 28,
                     fontWeight: FontWeight.w500,
+                    color: Theme.of(context).colorScheme.onBackground,
                   ),
                   const SizedBox(
                     height: 18,
@@ -165,10 +169,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
-                          Expanded(
-                            child:
-                                Image.asset('assets/images/disasterImage2.jpg'),
-                          ),
+                          const Spacer(),
+                          screenWidth < mobileScreenWidth
+                              ? Expanded(
+                                  child: Image.asset(
+                                      'assets/images/disasterImage2.jpg'))
+                              : SizedBox(
+                                  width: screenWidth / 13,
+                                  child: Image.asset(
+                                    'assets/images/disasterImage2.jpg',
+                                  ),
+                                ),
                         ],
                       ),
                     ),
@@ -181,11 +192,11 @@ class _HomeScreenState extends State<HomeScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CustomTextWidget(
+                  CustomTextWidget(
                     text: 'Salient Features',
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xff040415),
+                    color: Theme.of(context).colorScheme.onBackground,
                   ),
                   const SizedBox(
                     height: 21,

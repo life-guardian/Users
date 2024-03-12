@@ -87,8 +87,6 @@ class _SearchAgencyScreenState extends State<SearchAgencyWidget> {
       }
     }
 
-    debugPrint('AgenciesList: $data');
-
     return data;
   }
 
@@ -135,9 +133,6 @@ class _SearchAgencyScreenState extends State<SearchAgencyWidget> {
           setState(() {
             agencies = [];
             agencies.addAll(value);
-
-            print("Values: $value");
-            print("Agencies: $agencies");
             activeScreen = AgenciesListListview(
               userName: widget.userName,
               list: agencies,
@@ -154,6 +149,9 @@ class _SearchAgencyScreenState extends State<SearchAgencyWidget> {
     ThemeData themeData = Theme.of(context);
     return Column(
       children: [
+        const SizedBox(
+          height: 21,
+        ),
         TextField(
           controller: searchText,
           onChanged: (value) {
