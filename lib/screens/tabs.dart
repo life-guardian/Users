@@ -2,12 +2,18 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:user_app/api_urls/config.dart';
 import 'package:user_app/constants/sizes.dart';
 import 'package:user_app/providers/alert_providert.dart';
+import 'package:user_app/providers/device_location_provider.dart';
 import 'package:user_app/providers/program_events_provider.dart';
+import 'package:user_app/providers/user_details_provider.dart';
 import 'package:user_app/screens/home_screen.dart';
 import 'package:user_app/screens/login_screen.dart';
 import 'package:user_app/screens/user_account_details.dart';
@@ -15,7 +21,7 @@ import 'package:user_app/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'package:user_app/small_widgets/custom_text_widgets/custom_text_widget.dart';
+import 'package:user_app/widgets/custom_text_widgets/custom_text_widget.dart';
 
 class TabsBottom extends ConsumerStatefulWidget {
   const TabsBottom({
@@ -47,8 +53,9 @@ class _TabsBottomState extends ConsumerState<TabsBottom> {
 
     // get location when the page loads
     getLocation();
-    Timer.periodic(const Duration(minutes: 10), (timer) {
-      // put device location after per 15 minutes
+    getImageFileFromAssets('assets/images/no-profile-photo.jpeg')
+        .then((value) => ref.read(profileImageProvider.notifier).state = value);
+    Timer.periodic(const Duration(minutes: 5), (timer) {
       getLocation();
     });
   }
@@ -56,10 +63,17 @@ class _TabsBottomState extends ConsumerState<TabsBottom> {
   @override
   void dispose() {
     super.dispose();
-    getLocation();
-    ref.read(nearbyEventsProvider.notifier).clearData();
-    ref.read(registeredEventsProvider.notifier).clearData();
-    ref.read(alertsProvider.notifier).clearData();
+    resetAllProviders();
+  }
+
+  Future<XFile> getImageFileFromAssets(String path) async {
+    final ByteData byteData = await rootBundle.load(path);
+    final List<int> bytes = byteData.buffer.asUint8List();
+    final tempDir = await getTemporaryDirectory();
+    final fileName = path.split('/').last; // Extracting filename from the path
+    final tempFilePath = '${tempDir.path}/$fileName';
+    await File(tempFilePath).writeAsBytes(bytes);
+    return XFile(tempFilePath);
   }
 
   Future<void> getNameSharedPreference() async {
@@ -82,7 +96,11 @@ class _TabsBottomState extends ConsumerState<TabsBottom> {
           desiredAccuracy: LocationAccuracy.best);
       universalLat = currentPosition.latitude;
       universaLng = currentPosition.longitude;
-      debugPrint("Latitude: $universalLat , Longitude: $universaLng");
+
+      ref.read(deviceLocationProvider.notifier).state = [
+        currentPosition.latitude,
+        currentPosition.longitude
+      ];
       putLocation(lat: universalLat!, lng: universaLng!);
     }
     if (permission == LocationPermission.deniedForever) {
@@ -109,6 +127,7 @@ class _TabsBottomState extends ConsumerState<TabsBottom> {
       activePage = HomeScreen(
         token: widget.token,
         userName: userName ?? "",
+        ref: ref,
       );
     });
   }
@@ -121,7 +140,13 @@ class _TabsBottomState extends ConsumerState<TabsBottom> {
     );
   }
 
-  void showCircularProgressBar() {
+  void resetAllProviders() {
+    ref.read(alertsProvider.notifier).clearData();
+    ref.read(nearbyEventsProvider.notifier).clearData();
+    ref.read(registeredEventsProvider.notifier).clearData();
+  }
+
+  void _logoutUser() async {
     showDialog(
       context: context,
       builder: (context) {
@@ -132,16 +157,6 @@ class _TabsBottomState extends ConsumerState<TabsBottom> {
         );
       },
     );
-  }
-
-  void resetAllProviders() {
-    ref.read(alertsProvider.notifier).clearData();
-    ref.read(nearbyEventsProvider.notifier).clearData();
-    ref.read(registeredEventsProvider.notifier).clearData();
-  }
-
-  void _logoutUser() async {
-    showCircularProgressBar();
 
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -173,12 +188,15 @@ class _TabsBottomState extends ConsumerState<TabsBottom> {
       activePage = HomeScreen(
         token: widget.token,
         userName: userName ?? "",
+        ref: ref,
       );
     }
 
     if (_currentIndx == 1) {
       activePage = UserAccountDetails(
+        username: userName,
         logoutUser: _logoutUser,
+        ref: ref,
       );
     }
 

@@ -1,22 +1,31 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
+import 'dart:io';
+
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:user_app/constants/sizes.dart';
-import 'package:user_app/large_widget/custom_card_widget.dart';
+import 'package:user_app/providers/user_details_provider.dart';
+import 'package:user_app/widgets/custom_card_widget.dart';
 import 'package:user_app/screens/features_screen.dart';
-import 'package:user_app/small_widgets/custom_text_widgets/custom_text_widget.dart';
-import 'package:user_app/transitions_animations/custom_page_transition.dart';
+import 'package:user_app/screens/maps_screen.dart';
+import 'package:user_app/widgets/custom_text_widgets/custom_text_widget.dart';
+import 'package:user_app/animations/transitions_animations/custom_page_transition.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
     required this.token,
     required this.userName,
+    required this.ref,
   });
   final token;
   final String userName;
+  final WidgetRef ref;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -25,6 +34,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late String dayOfWeek;
   late String formattedDate;
+  XFile? _pickedImage;
 
   @override
   void initState() {
@@ -41,18 +51,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    _pickedImage = widget.ref.watch(profileImageProvider);
+    String grettingMessage = widget.ref.watch(greetingProvider);
 
-    return Scaffold(
-      body: Padding(
-        padding:
-            const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
-        // padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+    return Padding(
+      padding: const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
+      // padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FadeInUp(
+              duration: const Duration(milliseconds: 500),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
@@ -77,24 +89,48 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  CircleAvatar(
-                    maxRadius: 30,
-                    backgroundColor: Colors.transparent,
-                    child: Image.asset('assets/logos/circularIndianFlag.png'),
-                  ),
+                  if (_pickedImage != null)
+                    GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return FadeInUp(
+                              duration: const Duration(milliseconds: 500),
+                              child: AlertDialog(
+                                content: Image(
+                                  image: FileImage(
+                                    File(_pickedImage!.path),
+                                  ),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      child: CircleAvatar(
+                        radius: 25,
+                        backgroundImage: FileImage(File(_pickedImage!.path)),
+                      ),
+                    ),
                 ],
               ),
-              const SizedBox(
-                height: 31,
-              ),
-              Column(
+            ),
+            const SizedBox(
+              height: 31,
+            ),
+            FadeInUp(
+              delay: const Duration(milliseconds: 100),
+              duration: const Duration(milliseconds: 500),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomTextWidget(
                     text: (widget.userName != "")
-                        ? 'Hi ${widget.userName}.'
+                        ? '$grettingMessage! ${widget.userName}'
                         : "Loading...",
-                    fontSize: 28,
+                    fontSize: 25,
                     fontWeight: FontWeight.w500,
                     color: Theme.of(context).colorScheme.onBackground,
                   ),
@@ -186,10 +222,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height / 13,
-              ),
-              Column(
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height / 13,
+            ),
+            FadeInUp(
+              delay: const Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 500),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomTextWidget(
@@ -209,15 +249,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                // code here to navigate to maps
+                                Navigator.of(context).push(
+                                  CustomSlideTransition(
+                                    direction: AxisDirection.left,
+                                    child: MapsScreen(
+                                      token: widget.token,
+                                    ),
+                                  ),
+                                );
                               },
                               child: const CustomCardWidget(
                                 width: 170,
                                 height: 120,
                                 color1: Color(0xffFFA0BC),
                                 color2: Color(0xffFF1B5E),
-                                title: 'Agencies',
-                                desc: 'Nearby rescue ops',
+                                title: 'Maps',
+                                desc: 'Nearby agencies and Help!',
                               ),
                             ),
                             const SizedBox(
@@ -286,7 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     direction: AxisDirection.left,
                                     child: FeaturesScreen(
                                       token: widget.token,
-                                      screenType: 'Alerts',
+                                      screenType: 'AlertsScreen',
                                       username: widget.userName,
                                     ),
                                   ),
@@ -308,8 +355,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   )
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
