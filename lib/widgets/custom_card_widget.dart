@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:user_app/small_widgets/custom_text_widgets/custom_text_widget.dart';
+import 'package:user_app/widgets/custom_text_widgets/custom_text_widget.dart';
 
 class CustomCardWidget extends StatelessWidget {
   const CustomCardWidget({
@@ -54,6 +54,7 @@ class CustomCardWidget extends StatelessWidget {
               text: desc,
               color: Colors.white,
               fontSize: 14,
+              
               fontWeight: FontWeight.w300,
             ),
           ],

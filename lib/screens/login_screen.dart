@@ -1,14 +1,15 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'package:animate_do/animate_do.dart';
 import 'package:user_app/constants/sizes.dart';
 import 'package:user_app/custom_functions/validate_textfields.dart';
 import 'package:user_app/screens/tabs.dart';
-import 'package:user_app/small_widgets/custom_dialogs/custom_show_dialog.dart';
+import 'package:user_app/widgets/custom_dialogs/custom_show_dialog.dart';
 import 'package:user_app/api_urls/config.dart';
 import 'package:user_app/screens/register_screen.dart';
-import 'package:user_app/transitions_animations/custom_page_transition.dart';
-import 'package:user_app/small_widgets/custom_textfields/textfield_widget.dart';
+import 'package:user_app/animations/transitions_animations/custom_page_transition.dart';
+import 'package:user_app/widgets/custom_textfields/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -73,15 +74,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _loginUser() async {
-    // showDialog(
-    //   barrierDismissible: false,
-    //   context: context,
-    //   builder: (ctx) => const Center(
-    //     child: CircularProgressIndicator(
-    //       color: Colors.grey,
-    //     ),
-    //   ),
-    // );
     setState(() {
       isLogging = true;
     });
@@ -131,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData themeData = Theme.of(context);
+    Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
     bool kIsMobile = (screenWidth <= mobileScreenWidth);
     return Scaffold(
@@ -139,30 +131,6 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              foregroundColor: (themeData.brightness == Brightness.light)
-                  ? const Color.fromARGB(185, 30, 35, 44)
-                  : const Color(0xffe1dcd3),
-              side: BorderSide(
-                color: (themeData.brightness == Brightness.light)
-                    ? const Color.fromARGB(32, 30, 35, 44)
-                    : const Color(0xffE1DCD3),
-              ),
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Icon(
-              Icons.arrow_back_ios,
-              size: 20,
-            ),
-          ),
-        ),
       ),
       body: Center(
         child: Padding(
@@ -171,21 +139,28 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               // mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/images/disasterImage2.jpg'),
-                const SizedBox(
-                  height: 12,
-                ),
-                Text(
-                  'Life Guardian',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onBackground,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 20,
-                    shadows: const [
-                      Shadow(
-                        offset: Offset(0.0, 7.0),
-                        blurRadius: 15.0,
-                        color: Color.fromARGB(57, 0, 0, 0),
+                FadeInUp(
+                  duration: const Duration(milliseconds: 500),
+                  child: Column(
+                    children: [
+                      Image.asset('assets/images/disasterImage2.jpg'),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      Text(
+                        'Life Guardian',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onBackground,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                          shadows: const [
+                            Shadow(
+                              offset: Offset(0.0, 7.0),
+                              blurRadius: 15.0,
+                              color: Color.fromARGB(57, 0, 0, 0),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -198,68 +173,81 @@ class _LoginScreenState extends State<LoginScreen> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        Text(
-                          'Welcome back! Glad to see you, Stay Safe!',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onBackground,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 30,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 31,
-                        ),
-                        SizedBox(
-                          width: !kIsMobile ? screenWidth / 2 : null,
-                          child: TextFieldWidget(
-                            labelText: 'Email / Phone',
-                            controllerText: userLoginEmail,
-                            checkValidation: (value) =>
-                                validateTextField(value, 'Email / Phone'),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 12,
-                        ),
-                        SizedBox(
-                          width: !kIsMobile ? screenWidth / 2 : null,
-                          child: TextFieldWidget(
-                            labelText: 'Password',
-                            controllerText: userPassword,
-                            checkValidation: (value) =>
-                                validateTextField(value, 'Password'),
-                            obsecureIcon: true,
-                            hideText: true,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 12,
-                        ),
-                        const SizedBox(
-                          height: 31,
-                        ),
-                        SizedBox(
-                          width: !kIsMobile ? screenWidth / 4 : double.infinity,
-                          height: 55,
-                          child: ElevatedButton(
-                            onPressed: _submitButton,
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.tertiary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
+                        FadeInUp(
+                          duration: const Duration(milliseconds: 500),
+                          child: Text(
+                            'Welcome back! Glad to see you, Stay Safe!',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onBackground,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 30,
                             ),
-                            child: isLogging
-                                ? const Center(
-                                    child: SizedBox(
-                                      height: 25,
-                                      width: 25,
-                                      child: CircularProgressIndicator(),
-                                    ),
-                                  )
-                                : const Text('Login'),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 31,
+                        ),
+                        FadeInUp(
+                          delay: const Duration(milliseconds: 100),
+                          duration: const Duration(milliseconds: 500),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                width: !kIsMobile ? screenWidth / 2 : null,
+                                child: TextFieldWidget(
+                                  labelText: 'Email / Phone',
+                                  controllerText: userLoginEmail,
+                                  checkValidation: (value) =>
+                                      validateTextField(value, 'Email / Phone'),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              SizedBox(
+                                width: !kIsMobile ? screenWidth / 2 : null,
+                                child: TextFieldWidget(
+                                  labelText: 'Password',
+                                  controllerText: userPassword,
+                                  checkValidation: (value) =>
+                                      validateTextField(value, 'Password'),
+                                  obsecureIcon: true,
+                                  hideText: true,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 41,
+                        ),
+                        FadeInUp(
+                          delay: const Duration(milliseconds: 200),
+                          duration: const Duration(milliseconds: 500),
+                          child: SizedBox(
+                            width:
+                                !kIsMobile ? screenWidth / 4 : double.infinity,
+                            height: 55,
+                            child: ElevatedButton(
+                              onPressed: _submitButton,
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.tertiary,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: isLogging
+                                  ? const Center(
+                                      child: SizedBox(
+                                        height: 25,
+                                        width: 25,
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    )
+                                  : const Text('Login'),
+                            ),
                           ),
                         ),
                       ],
@@ -269,26 +257,30 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(
                   height: 21,
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Don\'t have an account?',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      TextButton(
-                        onPressed: _goToRegisterPage,
-                        child: const Text(
-                          'Register Now',
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontSize: 16,
+                FadeInUp(
+                  delay: const Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 500),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Don\'t have an account?',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        TextButton(
+                          onPressed: _goToRegisterPage,
+                          child: const Text(
+                            'Register Now',
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],

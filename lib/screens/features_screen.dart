@@ -3,10 +3,12 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:user_app/animations/listview_shimmer_effect.dart';
 import 'package:user_app/api_urls/config.dart';
 import 'package:user_app/constants/sizes.dart';
 import 'package:user_app/models/alerts.dart';
@@ -15,10 +17,11 @@ import 'package:user_app/models/nearby_events.dart';
 import 'package:user_app/models/registered_events.dart';
 import 'package:user_app/providers/alert_providert.dart';
 import 'package:user_app/providers/program_events_provider.dart';
-import 'package:user_app/small_widgets/custom_screen_widgets/search_agency.dart';
-import 'package:user_app/small_widgets/listview_builders/alerts_listview.dart';
-import 'package:user_app/small_widgets/listview_builders/nearby_events_listview.dart';
-import 'package:user_app/small_widgets/listview_builders/registered_events_listview.dart';
+import 'package:user_app/widgets/custom_button/custom_back_button.dart';
+import 'package:user_app/widgets/custom_screen_widgets/search_agency.dart';
+import 'package:user_app/widgets/listview_builders/alerts_listview.dart';
+import 'package:user_app/widgets/listview_builders/nearby_events_listview.dart';
+import 'package:user_app/widgets/listview_builders/registered_events_listview.dart';
 
 class FeaturesScreen extends ConsumerStatefulWidget {
   const FeaturesScreen({
@@ -47,7 +50,7 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
   void initState() {
     super.initState();
 
-    if (widget.screenType == 'Alerts') {
+    if (widget.screenType == 'AlertsScreen') {
       alertsProviderActiveWidget();
       getAlertsData();
     } else if (widget.screenType == 'ProgramEvents') {
@@ -67,11 +70,7 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
   void alertsProviderActiveWidget() {
     activeWidget = ref.read(alertsProvider).isNotEmpty
         ? AlertsListview(ref: ref)
-        : const Center(
-            child: CircularProgressIndicator(
-              color: Colors.grey,
-            ),
-          );
+        : const ListviewShimmerEffect();
   }
 
   void nearbyEventsProviderActiveWidget() {
@@ -82,11 +81,7 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
             ref: ref,
             userName: widget.username,
           )
-        : const Center(
-            child: CircularProgressIndicator(
-              color: Colors.grey,
-            ),
-          );
+        : const ListviewShimmerEffect();
   }
 
   Future<void> getNearByEventsData() async {
@@ -203,7 +198,7 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    ThemeData themeData = Theme.of(context);
+    Theme.of(context);
 
     return Scaffold(
       resizeToAvoidBottomInset:
@@ -243,34 +238,9 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
                     ],
                   ),
                   const Spacer(),
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      foregroundColor:
-                          (themeData.brightness == Brightness.light)
-                              ? const Color.fromARGB(185, 30, 35, 44)
-                              : const Color(0xffe1dcd3),
-                      side: BorderSide(
-                        color: (themeData.brightness == Brightness.light)
-                            ? const Color.fromARGB(32, 30, 35, 44)
-                            : const Color(0xffE1DCD3),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Icon(
-                          Icons.arrow_back_ios,
-                          size: 20,
-                        ),
-                        Text('back')
-                      ],
-                    ),
-                  ),
+                  const CustomBackButton(
+                    text: "back",
+                  )
                 ],
               ),
             ),
@@ -347,17 +317,42 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
                                 child: Image.asset(
                                   'assets/logos/settings-sliders.png',
                                   width: 24,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground,
                                 ),
                               ),
                             ],
                           ),
                         ),
+                      if (widget.screenType == 'AlertsScreen')
+                        Row(
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
+                              child: Text(
+                                "Near by Alerts. Stay Safe!",
+                                style: GoogleFonts.plusJakartaSans().copyWith(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      const SizedBox(
+                        height: 11,
+                      ),
                       Expanded(
                         child: SizedBox(
                           width: screenWidth > mobileScreenWidth
                               ? screenWidth / 1.5
                               : double.infinity,
-                          child: activeWidget,
+                          child: FadeInUp(
+                            duration: const Duration(milliseconds: 500),
+                            child: activeWidget,
+                          ),
                         ),
                       ),
                     ],

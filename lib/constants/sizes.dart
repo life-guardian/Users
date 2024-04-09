@@ -1,3 +1,3 @@
-const double mobileScreenWidth = 600;
+const double mobileScreenWidth = 480;
 
 const double kWebMinWidth = 900;

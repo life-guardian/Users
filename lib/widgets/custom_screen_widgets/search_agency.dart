@@ -3,10 +3,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:user_app/animations/listview_shimmer_effect.dart';
 import 'package:user_app/api_urls/config.dart';
 import 'package:http/http.dart' as http;
 import 'package:user_app/models/agencies_details.dart';
-import 'package:user_app/small_widgets/listview_builders/agencies_list_listview.dart';
+import 'package:user_app/widgets/listview_builders/agencies_list_listview.dart';
 
 class SearchAgencyWidget extends StatefulWidget {
   const SearchAgencyWidget({
@@ -29,11 +30,7 @@ class _SearchAgencyScreenState extends State<SearchAgencyWidget> {
   String searchTextToString = '';
   TextEditingController searchText = TextEditingController();
 
-  Widget activeScreen = const Center(
-    child: CircularProgressIndicator(
-      color: Colors.grey,
-    ),
-  );
+  Widget activeScreen = const ListviewShimmerEffect();
 
   @override
   void dispose() {
