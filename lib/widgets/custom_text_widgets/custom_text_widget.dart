@@ -7,11 +7,12 @@ class CustomTextWidget extends StatelessWidget {
     required this.text,
     this.fontSize = 12,
     this.fontWeight = FontWeight.bold,
-    this.color,
+    this.color, this.textOverflow,
   });
 
   final String text;
   final double fontSize;
+  final TextOverflow? textOverflow;
   final FontWeight fontWeight;
   final Color? color;
 
@@ -19,7 +20,7 @@ class CustomTextWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      // overflow: TextOverflow.ellipsis,
+      overflow: textOverflow,
       style: GoogleFonts.mulish(
         fontWeight: fontWeight,
         fontSize: fontSize,

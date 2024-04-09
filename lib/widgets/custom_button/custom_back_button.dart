@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:user_app/widgets/custom_text_widgets/custom_text_widget.dart';
 
 class CustomBackButton extends StatelessWidget {
   const CustomBackButton({
@@ -38,8 +39,8 @@ class CustomBackButton extends StatelessWidget {
             size: 20,
           ),
           if (text != null)
-            Text(
-              text!,
+            CustomTextWidget(
+              text: text!,
             )
         ],
       ),

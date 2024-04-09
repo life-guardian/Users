@@ -27,7 +27,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController email = TextEditingController();
   TextEditingController phoneNumber = TextEditingController();
   TextEditingController address = TextEditingController();
-  // TextEditingController representativeName = TextEditingController();
   TextEditingController password = TextEditingController();
   TextEditingController userConfirmPassword = TextEditingController();
   bool registerButtonPressed = false;
@@ -205,28 +204,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
     bool kIsMobile = (screenWidth <= mobileScreenWidth);
 
     return Scaffold(
-      // resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).colorScheme.background,
       resizeToAvoidBottomInset: kIsMobile ? true : false,
-
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: !kIsMobile
-            ? SingleChildScrollView(
-                child: registerScreenWidget(
-                    screenHeight: screenHeight,
-                    screenWidth: screenWidth,
-                    kIsMobile: kIsMobile),
-              )
-            : registerScreenWidget(
-                screenHeight: screenHeight,
-                screenWidth: screenWidth,
-                kIsMobile: kIsMobile,
-              ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: !kIsMobile
+              ? registerScreenWidget(
+                  screenHeight: screenHeight,
+                  screenWidth: screenWidth,
+                  kIsMobile: kIsMobile)
+              : registerScreenWidget(
+                  screenHeight: screenHeight,
+                  screenWidth: screenWidth,
+                  kIsMobile: kIsMobile,
+                ),
+        ),
       ),
     );
   }
@@ -254,12 +251,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             height: 31,
           ),
           kIsMobile
-              ? Expanded(
-                  child: registerScreenFormWidget(
-                    screenHeight: screenHeight,
-                    screenWidth: screenWidth,
-                    kIsMobile: kIsMobile,
-                  ),
+              ? registerScreenFormWidget(
+                  screenHeight: screenHeight,
+                  screenWidth: screenWidth,
+                  kIsMobile: kIsMobile,
                 )
               : registerScreenFormWidget(
                   screenHeight: screenHeight,

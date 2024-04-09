@@ -17,7 +17,7 @@ import 'package:user_app/models/nearby_events.dart';
 import 'package:user_app/models/registered_events.dart';
 import 'package:user_app/providers/alert_providert.dart';
 import 'package:user_app/providers/program_events_provider.dart';
-import 'package:user_app/widgets/custom_button/custom_back_button.dart';
+import 'package:user_app/widgets/app_bars/custom_events_appbar.dart';
 import 'package:user_app/widgets/custom_screen_widgets/search_agency.dart';
 import 'package:user_app/widgets/listview_builders/alerts_listview.dart';
 import 'package:user_app/widgets/listview_builders/nearby_events_listview.dart';
@@ -207,43 +207,7 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Image.asset('assets/logos/indiaflaglogo.png'),
-                  const SizedBox(
-                    width: 21,
-                  ),
-                  Column(
-                    // mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Jai Hind!',
-                        style: GoogleFonts.inter().copyWith(fontSize: 12),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Text(
-                        widget.username,
-                        // email,
-                        style: GoogleFonts.plusJakartaSans().copyWith(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  const CustomBackButton(
-                    text: "back",
-                  )
-                ],
-              ),
-            ),
+            CustomEventsAppBar(agencyName: widget.username),
             const SizedBox(
               height: 5,
             ),

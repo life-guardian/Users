@@ -51,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     _pickedImage = widget.ref.watch(profileImageProvider);
     String grettingMessage = widget.ref.watch(greetingProvider);
 
@@ -162,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                       borderRadius: BorderRadius.all(
-                        Radius.circular(16),
+                        Radius.circular(10),
                       ),
                     ),
                     child: Padding(
@@ -178,14 +179,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
                               ),
-                              const Flexible(
-                                child: CustomTextWidget(
-                                  text:
-                                      'Disaster Safety, all in one app. Stay prepared, stay safe.',
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                              const CustomTextWidget(
+                                text:
+                                    'Disaster Safety, all in one app. Stay prepared, stay safe.',
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
                               ),
                               const Spacer(),
                               SizedBox(
@@ -207,10 +206,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           const Spacer(),
                           screenWidth < mobileScreenWidth
                               ? Expanded(
-                                  child: Image.asset(
-                                      'assets/images/disasterImage2.jpg'))
+                                  child: SizedBox(
+                                    width: 40,
+                                    child: Image.asset(
+                                        'assets/images/disasterImage2.jpg'),
+                                  ),
+                                )
                               : SizedBox(
-                                  width: screenWidth / 13,
+                                  width: screenWidth / 10,
                                   child: Image.asset(
                                     'assets/images/disasterImage2.jpg',
                                   ),
@@ -223,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height / 13,
+              height: screenHeight / 13,
             ),
             FadeInUp(
               delay: const Duration(milliseconds: 200),

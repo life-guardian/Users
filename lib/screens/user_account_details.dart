@@ -64,70 +64,60 @@ class _UserAccountDetailsState extends State<UserAccountDetails> {
               const SizedBox(
                 height: 21,
               ),
-              Container(
+              SizedBox(
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Theme.of(context).colorScheme.primary,
-                  boxShadow: [
-                    if (isLightMode)
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        blurRadius: 20,
-                        offset:
-                            const Offset(0, 10), // changes position of shadow
-                      ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 30,
-                    horizontal: 20,
-                  ),
-                  child: Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return FadeInUp(
-                                duration: const Duration(milliseconds: 500),
-                                child: AlertDialog(
-                                  content: Image(
+                child: Card(
+                  elevation: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 30,
+                      horizontal: 20,
+                    ),
+                    child: Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return FadeInUp(
+                                  duration: const Duration(milliseconds: 500),
+                                  child: AlertDialog(
+                                    content: Image(
+                                      image: FileImage(
+                                        File(_pickedImage!.path),
+                                      ),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: CircleAvatar(
+                            radius: 100,
+                            backgroundImage: _pickedImage != null
+                                ? Image(
                                     image: FileImage(
-                                      File(_pickedImage!.path),
+                                      File(
+                                        _pickedImage!.path,
+                                      ),
                                     ),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        child: CircleAvatar(
-                          radius: 100,
-                          backgroundImage: _pickedImage != null
-                              ? Image(
-                                  image: FileImage(
-                                    File(
-                                      _pickedImage!.path,
-                                    ),
-                                  ),
-                                  fit: BoxFit.fitHeight,
-                                ).image
-                              : null,
+                                    fit: BoxFit.fitHeight,
+                                  ).image
+                                : null,
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 31,
-                      ),
-                      CustomTextWidget(
-                        text: widget.username ?? "",
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ],
+                        const SizedBox(
+                          height: 31,
+                        ),
+                        CustomTextWidget(
+                          text: widget.username ?? "",
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

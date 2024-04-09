@@ -21,43 +21,45 @@ class CustomCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          // stops: [0.1, 0.8],
-          colors: [color1, color2],
+    return Card(
+      elevation: 3,
+      child: Container(
+        height: height,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            // stops: [0.1, 0.8],
+            colors: [color1, color2],
+          ),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(10),
+          ),
         ),
-        borderRadius: const BorderRadius.all(
-          Radius.circular(16),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CustomTextWidget(
-              text: title,
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            CustomTextWidget(
-              text: desc,
-              color: Colors.white,
-              fontSize: 14,
-              
-              fontWeight: FontWeight.w300,
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CustomTextWidget(
+                text: title,
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              CustomTextWidget(
+                text: desc,
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w300,
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -227,7 +227,7 @@ class AgencyDetails extends StatelessWidget {
               ),
               // const Divider(thickness: 0.2),
               SizedBox(
-                height: MediaQuery.of(context).size.height / 8,
+                height: MediaQuery.of(context).size.height / 12,
               ),
               Center(
                 child: Padding(

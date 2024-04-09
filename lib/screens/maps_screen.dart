@@ -442,7 +442,7 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
               ),
             const Positioned(
               top: 30,
-              left: 10,
+              right: 10,
               child: CustomBackButton(
                 text: "back",
                 outlinedColor: Color.fromARGB(185, 30, 35, 44),

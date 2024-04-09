@@ -221,7 +221,7 @@ class ProgramEventDetails extends StatelessWidget {
                 ],
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height / 8,
+                height: MediaQuery.of(context).size.height / 12,
               ),
               const HorizontalDivider(
                 thickness: 0.3,
