@@ -43,8 +43,7 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
   @override
   void initState() {
     super.initState();
-    connectSocket();
-    getIsRescueOnGoing();
+    getInitialConnectAgenciesLocation();
   }
 
   @override
@@ -59,16 +58,11 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
   // <------------------------ <Socket Implementation> ------------------------>
 
   void disconnectSocket() async {
-    try {
-      socket.disconnect();
-      socket.dispose();
-      socket.onDisconnect((data) {
-        debugPrint("Socket Dissconnected");
-      });
-    } catch (e) {
-      debugPrint(
-          "Exception occured while socket disconnecting: ${e.toString()}");
-    }
+    socket.disconnect();
+    socket.onDisconnect((data) {
+      debugPrint("Socket Dissconnected");
+    });
+    socket.dispose();
   }
 
   Future<bool?> getIsRescueOnGoing() async {
@@ -78,27 +72,30 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
       ),
       headers: {"Authorization": "Bearer ${widget.token}"},
     );
+    try {
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
+        isRescueMeOnGoing = jsonResponse["isAlreadyRescueMeStarted"];
 
-    if (response.statusCode == 200) {
-      var jsonResponse = jsonDecode(response.body);
-      isRescueMeOnGoing = jsonResponse["isAlreadyRescueMeStarted"];
-      if (isRescueMeOnGoing!) {
-        await initialConnectSendLocation();
-        startTrackingLocation();
+        debugPrint("IsRescueMe ongoing: $isRescueMeOnGoing");
+        if (isRescueMeOnGoing!) {
+          await initialConnectSendLocation();
+        }
+
+        setState(() {
+          initializeButtonValue();
+        });
       }
-
-      setState(() {
-        initializeButtonValue();
-      });
+    } catch (e) {
+      debugPrint("Exception occurede is getIsRescueOnGoing: ${e.toString()}");
     }
     return isRescueMeOnGoing!;
   }
 
   void initializeButtonValue() {
-    activeRescueMeButton = Text(
-      (isRescueMeOnGoing! ? 'Stop Rescue Me' : "Rescue Me").toUpperCase(),
-      style: GoogleFonts.mulish(
-          fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+    activeRescueMeButton = CustomTextWidget(
+      text: (isRescueMeOnGoing! ? 'Stop Rescue Me' : "Rescue Me").toUpperCase(),
+      color: Colors.white,
     );
   }
 
@@ -121,43 +118,45 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
         ];
         debugPrint(
             "Initial lat ${currentPosition.latitude} and lng: ${currentPosition.longitude}");
-        initialEmitLocationUpdate(
-            currentPosition.latitude, currentPosition.longitude);
+        emitLocationUpdate(currentPosition.latitude, currentPosition.longitude);
       }
     }
     return;
   }
 
-  void initialEmitLocationUpdate(double latitude, double longitude) {
-    socket.emit('initialConnect', {'lat': latitude, 'lng': longitude});
-  }
-
-  void startTrackingLocation() async {
-    LocationPermission permission = await geo.Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await geo.Geolocator.requestPermission();
-    }
-
-    if (permission == LocationPermission.always ||
-        permission == LocationPermission.whileInUse) {
-      geo.LocationSettings locationSettings = const geo.LocationSettings(
-        accuracy: geo.LocationAccuracy.high,
-        distanceFilter: 10,
+  Future<void> getInitialConnectAgenciesLocation() async {
+    final tempLatLng = ref.read(deviceLocationProvider);
+    try {
+      var response = await http.get(
+        Uri.parse(
+          "$baseUrl/api/rescueops/initialconnect/${tempLatLng[0]}/${tempLatLng[1]}",
+        ),
+        headers: {"Authorization": "Bearer ${widget.token}"},
       );
-      positionStreamSubscription = geo.Geolocator.getPositionStream(
-        locationSettings: locationSettings,
-      ).listen((Position position) {
-        if (mounted) {
-          ref.read(deviceLocationProvider.notifier).state = [
-            position.latitude,
-            position.longitude
-          ];
-          emitLocationUpdate(position.latitude, position.longitude);
+
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
+
+        final initialAgencies = jsonResponse["agencies"];
+
+        debugPrint("Got initial connect agency: \n ${jsonResponse.toString()}");
+
+        for (var liveAgency in initialAgencies) {
+          liveAgencies.add(LiveAgencies.fromJson(liveAgency));
         }
-      });
-    } else {
-      debugPrint("Location permission denied - cannot track location.");
+
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    } catch (error) {
+      debugPrint(
+          "Error while fetching intial connect agencies and user ${error.toString()}");
     }
+    connectSocket();
+    await getIsRescueOnGoing();
+    startTrackingLocation();
+    return;
   }
 
   void emitLocationUpdate(double latitude, double longitude) {
@@ -173,27 +172,11 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
     socket.connect();
     socket.onConnect((data) async {
       debugPrint("Socket Connected");
-      onIntialConnectReceiveNearbyAgencies();
       listenSocketOn();
     });
   }
 
-  void onIntialConnectReceiveNearbyAgencies() {
-    debugPrint("Listening to intial connect");
-    socket.on("initialConnectReceiveNearbyAgencies", (initialConnectAgencies) {
-      if (mounted) {
-        debugPrint("Got initial connect agency");
-        debugPrint(initialConnectAgencies.toString());
-        for (var liveAgency in initialConnectAgencies) {
-          liveAgencies.add(LiveAgencies.fromJson(liveAgency));
-        }
-        setState(() {});
-      }
-    });
-  }
-
   void listenSocketOn() {
-    debugPrint("Listening to after connect");
     socket.on("agencyLocationUpdate", (data) {
       if (mounted) {
         debugPrint("Got agency");
@@ -231,39 +214,54 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
     });
   }
 
+  void startTrackingLocation() async {
+    LocationPermission permission = await geo.Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await geo.Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse) {
+      geo.LocationSettings locationSettings = const geo.LocationSettings(
+        accuracy: geo.LocationAccuracy.high,
+        distanceFilter: 10,
+      );
+      positionStreamSubscription = geo.Geolocator.getPositionStream(
+        locationSettings: locationSettings,
+      ).listen((Position position) {
+        if (mounted) {
+          ref.read(deviceLocationProvider.notifier).state = [
+            position.latitude,
+            position.longitude
+          ];
+          if (isRescueMeOnGoing! && isRescueMeOnGoing != null) {
+            emitLocationUpdate(position.latitude, position.longitude);
+          }
+        }
+      });
+    } else {
+      debugPrint("Location permission denied - cannot track location.");
+    }
+  }
+
   // <------------------------ </Socket Implementation> ------------------------>
 
-  // Future<void> getInitialConnectAgenciesLocation() async {
-  //   var baseUrl = dotenv.get("BASE_URL");
+  // void initialEmitLocationUpdate(double latitude, double longitude) {
+  //   socket.emit('initialConnect', {'lat': latitude, 'lng': longitude});
+  // }
 
-  //   try {
-  //     var response = await http.get(
-  //       Uri.parse(
-  //         "$baseUrl/api/rescueops/initialconnect/${latLng[0]}/${latLng[1]}",
-  //       ),
-  //       headers: {"Authorization": "Bearer ${widget.token}"},
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       var jsonResponse = jsonDecode(response.body);
-
-  //       final initialAgencies = jsonResponse["agencies"];
+  // void onIntialConnectReceiveNearbyAgencies() {
+  //   debugPrint("Listening to intial connect");
+  //   socket.on("initialConnectReceiveNearbyAgencies", (initialConnectAgencies) {
+  //     if (mounted) {
   //       debugPrint("Got initial connect agency");
-  //       debugPrint(initialAgencies.toString());
-
-  //       for (var liveAgency in initialAgencies) {
+  //       debugPrint(initialConnectAgencies.toString());
+  //       for (var liveAgency in initialConnectAgencies) {
   //         liveAgencies.add(LiveAgencies.fromJson(liveAgency));
   //       }
-  //       if (mounted) {
-  //         setState(() {});
-  //       }
+  //       setState(() {});
   //     }
-  //   } catch (error) {
-  //     debugPrint(
-  //         "Error while fetching intial connect agencies and user ${error.toString()}");
-  //   }
-
-  //   return;
+  //   });
   // }
 
   void openModalBottomSheet({required LiveAgencies liveAgency}) {
@@ -307,9 +305,8 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
 
     if (response.statusCode == 200) {
       bool? isRescueMeOn = await getIsRescueOnGoing();
-      if (isRescueMeOn != null && isRescueMeOn) {
-        await initialConnectSendLocation();
-        startTrackingLocation();
+      if (isRescueMeOn!) {
+        initialConnectSendLocation();
       } else {
         Navigator.of(context).pop();
       }
@@ -330,11 +327,7 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
     }
 
     setState(() {
-      activeRescueMeButton = Text(
-        (isRescueMeOnGoing! ? 'Stop Rescue Me' : "Rescue Me").toUpperCase(),
-        style: GoogleFonts.mulish(
-            fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
-      );
+      initializeButtonValue();
     });
   }
 
