@@ -18,7 +18,6 @@ import 'package:user_app/view_model/providers/user_details_provider.dart';
 import 'package:user_app/widget/screen/home_widget.dart';
 import 'package:user_app/view/screens/login_screen.dart';
 import 'package:user_app/widget/screen/settings_widget.dart';
-import 'package:user_app/view/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -60,7 +59,6 @@ class _TabsBottomState extends ConsumerState<TabsBottom> {
   @override
   void dispose() {
     super.dispose();
-    resetAllProviders();
   }
 
   Future<XFile> getImageFileFromAssets(String path) async {
@@ -139,6 +137,8 @@ class _TabsBottomState extends ConsumerState<TabsBottom> {
     ref.read(alertsProvider.notifier).clearData();
     ref.read(nearbyEventsProvider.notifier).clearData();
     ref.read(registeredEventsProvider.notifier).clearData();
+    ref.read(profileImageProvider.notifier).state = null;
+    ref.read(deviceLocationProvider.notifier).state = [0, 0];
   }
 
   void _logoutUser() async {
@@ -157,14 +157,11 @@ class _TabsBottomState extends ConsumerState<TabsBottom> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.remove('token');
       prefs.remove('username');
+      resetAllProviders();
       while (Navigator.canPop(context)) {
         Navigator.of(context).pop();
       }
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (ctx) => const WelcomeScreen(),
-        ),
-      );
+
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => const LoginScreen(),

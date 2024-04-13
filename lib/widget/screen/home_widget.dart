@@ -57,12 +57,15 @@ class _HomeWidgetState extends State<HomeWidget> {
     String grettingMessage = widget.ref.watch(greetingProvider);
 
     return Padding(
-      padding: const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(
+              height: 11,
+            ),
             FadeInUp(
               duration: const Duration(milliseconds: 500),
               child: Row(
@@ -360,9 +363,12 @@ class _HomeWidgetState extends State<HomeWidget> {
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
+            ),
+            const SizedBox(
+              height: 11,
             ),
           ],
         ),

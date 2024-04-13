@@ -85,6 +85,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                 return FadeInUp(
                                   duration: const Duration(milliseconds: 500),
                                   child: AlertDialog(
+                                    backgroundColor: Colors.transparent,
                                     content: Image(
                                       image: FileImage(
                                         File(_pickedImage!.path),

@@ -5,12 +5,12 @@ class CustomCircularProgressIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: SizedBox(
         height: 25,
         width: 25,
         child: CircularProgressIndicator(
-          color: Theme.of(context).colorScheme.onBackground,
+          color: Colors.white,
         ),
       ),
     );

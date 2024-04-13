@@ -18,7 +18,6 @@ void main() async {
     ProviderScope(
       child: MyApp(
         token: myToken,
-        // prefs: myToken`,
       ),
     ),
   );

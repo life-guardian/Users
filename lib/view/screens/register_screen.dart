@@ -262,13 +262,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   screenWidth: screenWidth,
                   kIsMobile: kIsMobile,
                 ),
-          kIsMobile
-              ? SizedBox(
-                  height: screenHeight / 10,
-                )
-              : const SizedBox(
-                  height: 11,
-                ),
+          SizedBox(
+            height: screenHeight / 10,
+          ),
           FadeInUp(
             delay: const Duration(milliseconds: 100),
             duration: const Duration(milliseconds: 500),

@@ -136,7 +136,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
           locality: locality!,
           eventId: eventId!,
           token: widget.token,
-          
+
           // registerForEvent: registerForEvent,
         );
       }

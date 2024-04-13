@@ -96,11 +96,11 @@ class _LoginScreenState extends State<LoginScreen> {
     String message = jsonResponse['message'];
     if (response.statusCode == 200) {
       userName = jsonResponse['data']['name'];
-      //storin user login data in local variable
+
       var myToken = jsonResponse['token'];
       prefs.setString('token', myToken);
       prefs.setString('username', userName!);
-      // Navigator.of(context).pop();
+
       _navigateToHomeScreen(token: myToken);
       //success
     } else {
