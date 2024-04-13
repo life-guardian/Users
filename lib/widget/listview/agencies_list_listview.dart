@@ -27,16 +27,13 @@ class AgenciesListListview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
-    return list.isEmpty
-        ? FadeInUp(
-            duration: const Duration(milliseconds: 500),
-            child: const NoDataFoundImage(
+    return FadeInUp(
+      duration: const Duration(milliseconds: 500),
+      child: list.isEmpty
+          ? const NoDataFoundImage(
               headingText: "No Agencies Found!",
-            ),
-          )
-        : FadeInUp(
-            duration: const Duration(milliseconds: 500),
-            child: ListView.builder(
+            )
+          : ListView.builder(
               itemCount: isLoadingMore ? list.length + 1 : list.length,
               controller: scrollController,
               itemBuilder: (context, index) {
@@ -134,6 +131,6 @@ class AgenciesListListview extends StatelessWidget {
                 }
               },
             ),
-          );
+    );
   }
 }

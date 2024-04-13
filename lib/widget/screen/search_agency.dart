@@ -40,18 +40,19 @@ class _SearchAgencyScreenState extends State<SearchAgencyWidget> {
   @override
   void initState() {
     super.initState();
-    fetchAgencies().then((value) => {
-          agencies.addAll(value),
-          setState(() {
-            activeScreen = AgenciesListListview(
-              list: agencies,
-              userName: widget.userName,
-              scrollController: scrollController,
-              isLoadingMore: isLoadingMore,
-              token: widget.token,
-            );
-          })
-        });
+
+    fetchAgencies().then((value) {
+      agencies.addAll(value);
+      setState(() {
+        activeScreen = AgenciesListListview(
+          list: agencies,
+          userName: widget.userName,
+          scrollController: scrollController,
+          isLoadingMore: isLoadingMore,
+          token: widget.token,
+        );
+      });
+    });
     scrollController.addListener(() {
       _scrollListener();
     });

@@ -3,16 +3,20 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:user_app/helper/constants/api_keys.dart';
 import 'package:http/http.dart' as http;
+import 'package:user_app/helper/services/program_and_events_api.dart';
+import 'package:user_app/view_model/providers/program_events_provider.dart';
 import 'package:user_app/widget/buttons/custom_elevated_button.dart';
+import 'package:user_app/widget/circular_progress_indicator/custom_circular_progress_indicator.dart';
 import 'package:user_app/widget/dialogs/custom_show_dialog.dart';
 import 'package:user_app/widget/text_widget/custom_text_widget.dart';
 import 'package:user_app/widget/divider/horizontal_divider.dart';
 
-class ProgramEventDetails extends StatelessWidget {
+class ProgramEventDetails extends ConsumerStatefulWidget {
   const ProgramEventDetails({
     super.key,
     required this.eventName,
@@ -30,22 +34,28 @@ class ProgramEventDetails extends StatelessWidget {
   final String eventDate;
   final String locality;
   final String eventId;
-  final token;
 
+  final String token;
+
+  @override
+  ConsumerState<ProgramEventDetails> createState() =>
+      _ProgramEventDetailsState();
+}
+
+class _ProgramEventDetailsState extends ConsumerState<ProgramEventDetails> {
+  Widget activeButtonWidget = const CustomTextWidget(
+    text: 'REGISTER',
+    fontSize: 16,
+    color: Colors.white,
+  );
   // final void Function() registerForEvent;
-
   void registerForEvent(BuildContext context) async {
-    showDialog(
-      context: context,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(
-          color: Colors.grey,
-        ),
-      ),
-    );
+    setState(() {
+      activeButtonWidget = const CustomCircularProgressIndicator();
+    });
 
     var reqBody = {
-      "eventId": eventId,
+      "eventId": widget.eventId,
     };
 
     try {
@@ -53,7 +63,7 @@ class ProgramEventDetails extends StatelessWidget {
         Uri.parse(registerEventUrl),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
+          'Authorization': 'Bearer ${widget.token}'
         },
         body: jsonEncode(reqBody),
       );
@@ -62,8 +72,13 @@ class ProgramEventDetails extends StatelessWidget {
       var message = jsonResponse['message'];
 
       if (response.statusCode == 200) {
-        Navigator.of(context).pop();
-        Navigator.of(context).pop(true);
+        ProgramsAndEventsApi programsAndEventsApi = ProgramsAndEventsApi();
+        programsAndEventsApi
+            .getRegisteredEventsData(token: widget.token)
+            .then((registeredEvents) {
+          ref.read(registeredEventsProvider.notifier).addList(registeredEvents);
+        });
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(message),
@@ -71,7 +86,6 @@ class ProgramEventDetails extends StatelessWidget {
           ),
         );
       } else {
-        Navigator.of(context).pop();
         customShowDialog(
           context: context,
           titleText: "Ooops!",
@@ -81,6 +95,14 @@ class ProgramEventDetails extends StatelessWidget {
     } catch (e) {
       debugPrint("Registering Event Exception ${e.toString()}");
     }
+
+    setState(() {
+      activeButtonWidget = const CustomTextWidget(
+        text: 'REGISTER',
+        fontSize: 16,
+        color: Colors.white,
+      );
+    });
   }
 
   @override
@@ -121,7 +143,7 @@ class ProgramEventDetails extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    eventName,
+                    widget.eventName,
                     style: GoogleFonts.mulish().copyWith(
                       fontWeight: FontWeight.w500,
                       fontSize: 15,
@@ -143,7 +165,7 @@ class ProgramEventDetails extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    eventDescription,
+                    widget.eventDescription,
                     style: GoogleFonts.mulish().copyWith(
                       fontWeight: FontWeight.w500,
                       fontSize: 15,
@@ -165,7 +187,7 @@ class ProgramEventDetails extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    agencyName,
+                    widget.agencyName,
                     style: GoogleFonts.mulish().copyWith(
                       fontWeight: FontWeight.w500,
                       fontSize: 15,
@@ -187,7 +209,8 @@ class ProgramEventDetails extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    DateFormat('dd/MM/yy').format(DateTime.parse(eventDate)),
+                    DateFormat('dd/MM/yy')
+                        .format(DateTime.parse(widget.eventDate)),
                     style: GoogleFonts.plusJakartaSans().copyWith(
                       fontWeight: FontWeight.bold,
                       color: (themeData.brightness == Brightness.light)
@@ -212,7 +235,7 @@ class ProgramEventDetails extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    locality,
+                    widget.locality,
                     style: GoogleFonts.mulish().copyWith(
                       fontWeight: FontWeight.w500,
                       fontSize: 15,
@@ -233,11 +256,7 @@ class ProgramEventDetails extends StatelessWidget {
                     width: 200,
                     height: 40,
                     child: CustomElevatedButton(
-                      childWidget: const CustomTextWidget(
-                        text: 'REGISTER',
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
+                      childWidget: activeButtonWidget,
                       onPressed: () async {
                         registerForEvent(context);
                       },

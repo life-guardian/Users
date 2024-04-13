@@ -1,18 +1,16 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:user_app/helper/services/alerts_api.dart';
+import 'package:user_app/helper/services/program_and_events_api.dart';
 import 'package:user_app/view/animations/listview_shimmer_effect.dart';
-import 'package:user_app/helper/constants/api_keys.dart';
 import 'package:user_app/helper/constants/sizes.dart';
 import 'package:user_app/model/alerts.dart';
-import 'package:http/http.dart' as http;
 import 'package:user_app/model/nearby_events.dart';
 import 'package:user_app/model/registered_events.dart';
 import 'package:user_app/view_model/providers/alert_providert.dart';
@@ -45,6 +43,9 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
   List<RegisteredEvents> registeredEvents = [];
   String filterText = 'Upcoming Nearby Events';
 
+  AlertsApi alertsApi = AlertsApi();
+  ProgramsAndEventsApi programsAndEventsApi = ProgramsAndEventsApi();
+
   late Widget activeWidget;
   late List<double> latLng;
   @override
@@ -52,14 +53,11 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
     super.initState();
     latLng = ref.read(deviceLocationProvider);
     if (widget.screenType == 'AlertsScreen') {
-      initialzeLoadingShimmerAnimation();
-      getNearByAlertsData();
+      alertShimmerAnimation();
+      alertsApiCall();
     } else if (widget.screenType == 'ProgramEvents') {
-      // this is to check if provider is not empty
-      nearbyEventsProviderActiveWidget();
-      // this to get updated data from server
-      getNearByEventsData();
-      getRegisteredEventsData();
+      eventsShimmerAnimation();
+      eventsApiCall();
     } else if (widget.screenType == 'SearchAgency') {
       activeWidget = SearchAgencyWidget(
         userName: widget.username,
@@ -68,137 +66,67 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
     }
   }
 
-  void initialzeLoadingShimmerAnimation() {
+  Future<void> alertsApiCall() async {
+    alertsApi
+        .getNearByAlerts(
+      token: widget.token,
+      latitude: latLng[0],
+      longitude: latLng[1],
+    )
+        .then((alerts) {
+      setState(() {
+        ref.read(alertsProvider.notifier).addList(alerts);
+        activeWidget = AlertsListview(ref: ref);
+      });
+    });
+  }
+
+  Future<void> eventsApiCall() async {
+    // get nearby events
+    programsAndEventsApi
+        .getNearByEventsData(
+      token: widget.token,
+      latitude: latLng[0],
+      longitude: latLng[1],
+    )
+        .then((events) {
+      ref.read(nearbyEventsProvider.notifier).addList(events);
+
+      setState(() {
+        activeWidget = NearbyEventsListview(
+          ref: ref,
+          token: widget.token,
+          userName: widget.username,
+        );
+      });
+    });
+    // get registered events
+    programsAndEventsApi.getRegisteredEventsData(token: widget.token).then(
+      (registeredEvents) {
+        ref.read(registeredEventsProvider.notifier).addList(registeredEvents);
+      },
+    );
+  }
+
+  void alertShimmerAnimation() {
     activeWidget = ref.read(alertsProvider).isNotEmpty
         ? AlertsListview(ref: ref)
         : const ListviewShimmerEffect();
   }
 
-  void nearbyEventsProviderActiveWidget() {
+  void eventsShimmerAnimation() {
     activeWidget = ref.read(nearbyEventsProvider).isNotEmpty
         ? NearbyEventsListview(
             token: widget.token,
-            onTap: getRegisteredEventsData,
             ref: ref,
             userName: widget.username,
           )
         : const ListviewShimmerEffect();
   }
 
-  Future<void> getNearByEventsData() async {
-    var response = await http.get(
-      Uri.parse("$nearbyEventsUrl/${latLng[0]}/${latLng[1]}"),
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer ${widget.token}'
-      },
-    );
-
-    List<NearbyEvents> data = [];
-
-    if (response.statusCode == 200) {
-      var jsonResponse = jsonDecode(response.body);
-
-      for (var jsonData in jsonResponse) {
-        data.add(NearbyEvents.fromJson(jsonData));
-      }
-    }
-
-    ref.read(nearbyEventsProvider.notifier).addList(data);
-
-    setState(() {
-      activeWidget = NearbyEventsListview(
-        ref: ref,
-        token: widget.token,
-        onTap: getRegisteredEventsData,
-        userName: widget.username,
-      );
-    });
-  }
-
-  Future<void> getRegisteredEventsData() async {
-    var response = await http.get(
-      Uri.parse(userRegeteredEventsUrl),
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer ${widget.token}'
-      },
-    );
-
-    List<RegisteredEvents> data = [];
-
-    if (response.statusCode == 200) {
-      var jsonResponse = jsonDecode(response.body);
-
-      for (var jsonData in jsonResponse) {
-        data.add(RegisteredEvents.fromJson(jsonData));
-      }
-    }
-
-    ref.read(registeredEventsProvider.notifier).addList(data);
-  }
-
-  Future<void> getNearByAlertsData() async {
-    var response = await http.get(
-      Uri.parse("$alertUrl/${latLng[0]}/${latLng[1]}"),
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer ${widget.token}'
-      },
-    );
-
-    List<Alerts> data = [];
-    if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      debugPrint(jsonResponse.toString());
-      for (var jsonData in jsonResponse) {
-        data.add(Alerts.fromJson(jsonData));
-      }
-    }
-
-    await getEventsLocality(data: data).then((alertListWithLocalities) {
-      data = alertListWithLocalities;
-    });
-
-    setState(() {
-      ref.read(alertsProvider.notifier).addList(data);
-      activeWidget = AlertsListview(ref: ref);
-    });
-  }
-
-  Future<List<Alerts>> getEventsLocality({required List<Alerts> data}) async {
-    List<List<double>> coordinates = [];
-
-    for (var event in data) {
-      coordinates.add(event.alertLocation!);
-    }
-
-    List<String> localities = [];
-
-    for (List<double> coordinate in coordinates) {
-      try {
-        List<Placemark> placemarks =
-            await placemarkFromCoordinates(coordinate[1], coordinate[0]);
-        Placemark placemark = placemarks[0];
-        String? locality = placemark.locality;
-        localities.add(locality!);
-      } catch (error) {
-        debugPrint("Error fetching locality for coordinates: $coordinate");
-        localities.add("Unknown");
-      }
-    }
-
-    for (int i = 0; i < data.length; i++) {
-      data[i].locality = localities[i];
-    }
-
-    return data;
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    Theme.of(context);
 
     return Scaffold(
       resizeToAvoidBottomInset:
@@ -272,7 +200,6 @@ class _FeaturesScreenState extends ConsumerState<FeaturesScreen> {
                                       activeWidget = NearbyEventsListview(
                                         ref: ref,
                                         userName: widget.username,
-                                        onTap: getRegisteredEventsData,
                                         token: widget.token,
                                       );
                                     }

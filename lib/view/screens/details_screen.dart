@@ -57,7 +57,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
     if (widget.screenType == 'EventDetails') {
       getEventsDetails();
     } else if (widget.screenType == 'AgencyDetails') {
-      // code here for agencydetails screen
       getAgencyDetails();
     }
   }
@@ -137,6 +136,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
           locality: locality!,
           eventId: eventId!,
           token: widget.token,
+          
           // registerForEvent: registerForEvent,
         );
       }

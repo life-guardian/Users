@@ -16,12 +16,10 @@ class NearbyEventsListview extends StatelessWidget {
     required this.token,
     required this.ref,
     required this.userName,
-    required this.onTap,
   });
   final WidgetRef ref;
   final token;
   final String userName;
-  final void Function() onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +36,8 @@ class NearbyEventsListview extends StatelessWidget {
               itemBuilder: (context, index) {
                 final eventData = nearbyEventsList[index];
                 return GestureDetector(
-                  onTap: () async {
-                    final isRecallNearbyEvents =
-                        await Navigator.of(context).push(
+                  onTap: () {
+                    Navigator.of(context).push(
                       CustomSlideTransition(
                         direction: AxisDirection.left,
                         child: DetailsScreen(
@@ -51,10 +48,6 @@ class NearbyEventsListview extends StatelessWidget {
                         ),
                       ),
                     );
-
-                    if (isRecallNearbyEvents) {
-                      onTap();
-                    }
                   },
                   child: Card(
                     elevation: 3,
