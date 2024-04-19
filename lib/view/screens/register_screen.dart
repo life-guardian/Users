@@ -174,7 +174,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     } else {
       setState(() {
         isLoging = false;
-        // registerButtonPressed = false;
       });
       registerButtonPressed = await customShowDialog(
         context: context,
