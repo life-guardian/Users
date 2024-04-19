@@ -7,9 +7,9 @@ class LiveAgencies {
   String? agencyName;
   int? phoneNumber;
   String? representativeName;
-  String? rescueOpsName; // can be null
-  String? rescueOpsDescription; // can be null
-  int? rescueTeamSize; // can be null
+  String? rescueOpsName;
+  String? rescueOpsDescription;
+  int? rescueTeamSize;
 
   LiveAgencies({
     this.lat,
@@ -34,6 +34,4 @@ class LiveAgencies {
     rescueOpsDescription = json['rescueOpsDescription'];
     rescueTeamSize = json['rescueTeamSize'];
   }
-
-
 }
