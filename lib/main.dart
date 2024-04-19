@@ -25,7 +25,6 @@ void main() async {
 
 class MyApp extends StatefulWidget {
   final String? token;
-
   const MyApp({super.key, required this.token});
 
   @override
