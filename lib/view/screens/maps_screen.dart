@@ -379,32 +379,37 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
       );
     });
 
-    debugPrint("Rescue reason from user: ${rescueReasonText.text}");
-
     var body = {
       "lat": latLng[0],
       "lng": latLng[1],
       "rescueReason": rescueReasonText.text.trim(),
     };
 
+    debugPrint("Rescue reason body from user: ${body.toString()}");
+
     http.Response response;
 
     try {
       if (apiUrl == rescueMeUrl) {
-        response = await http.put(
+        response = await http.post(
           Uri.parse(
             apiUrl,
           ),
-          headers: {"Authorization": "Bearer ${widget.token}"},
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer ${widget.token}"
+          },
           body: jsonEncode(body),
         );
-        debugPrint("Excuted in rescueMeUrl");
       } else {
         response = await http.put(
           Uri.parse(
             apiUrl,
           ),
-          headers: {"Authorization": "Bearer ${widget.token}"},
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer ${widget.token}"
+          },
           body: jsonEncode(body),
         );
       }

@@ -166,8 +166,10 @@ class _FeaturesScreenState extends ConsumerState<AlertsScreen> {
                                 searchText: value,
                               ).then((serachedAlerts) {
                                 setState(() {
-                                  // ref.read(alertsProvider.notifier).state = [];
-                                  // activeWidget = AlertsListview(ref: ref);
+                                  ref
+                                      .read(alertsProvider.notifier)
+                                      .addList(serachedAlerts);
+                                  activeWidget = AlertsListview(ref: ref);
                                 });
                               });
                             },
@@ -200,9 +202,10 @@ class _FeaturesScreenState extends ConsumerState<AlertsScreen> {
   }
 
   Future<List<Alerts>> searchByAlertName({required String searchText}) async {
+    List<double> tempLatLng = [latLng[0], latLng[1]];
     var response = await http.get(
       Uri.parse(
-          "$baseUrl/api/alert/search/?page=$pageIndex&limit=30&searchText=$searchText"),
+          "$baseUrl/api/alert/search/?page=$pageIndex&limit=30&lat=${tempLatLng[0]}&lng=${tempLatLng[1]}&searchText=$searchText"),
       headers: {
         "Content-Type": "application/json",
         'Authorization': 'Bearer ${widget.token}'
