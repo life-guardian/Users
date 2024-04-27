@@ -7,6 +7,7 @@ import 'package:user_app/helper/constants/api_keys.dart';
 import 'package:http/http.dart' as http;
 import 'package:user_app/model/agencies_details.dart';
 import 'package:user_app/widget/listview/agencies_list_listview.dart';
+import 'package:user_app/widget/custom_%20textfields/custom_textfield.dart';
 
 class SearchAgencyWidget extends StatefulWidget {
   const SearchAgencyWidget({
@@ -118,8 +119,6 @@ class _SearchAgencyScreenState extends State<SearchAgencyWidget> {
   }
 
   void searchAgency() {
-    searchTextToString = searchText.text;
-
     fetchAgencies().then((value) => {
           setState(() {
             agencies = [];
@@ -137,54 +136,24 @@ class _SearchAgencyScreenState extends State<SearchAgencyWidget> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData themeData = Theme.of(context);
     return Column(
       children: [
         const SizedBox(
           height: 21,
         ),
-        TextField(
-          controller: searchText,
+        CustomTextfield(
           onChanged: (value) {
-            pageIndex = 1;
+            searchTextToString = value;
             searchAgency();
           },
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: (themeData.brightness == Brightness.light)
-                ? const Color.fromARGB(161, 255, 255, 255)
-                : Theme.of(context).colorScheme.primary,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            enabledBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Color.fromARGB(156, 158, 158, 158)),
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-            ),
-            focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey),
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-            ),
-            labelText: 'Search Agency',
-            labelStyle:
-                TextStyle(color: Theme.of(context).colorScheme.onBackground),
-            suffixIcon: Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: IconButton(
-                onPressed: () {
-                  searchAgency();
-                },
-                icon: const Icon(
-                  Icons.search_outlined,
-                  size: 30,
-                ),
-              ),
+          suffixIcon: const Padding(
+            padding: EdgeInsets.only(right: 8),
+            child: Icon(
+              Icons.search_outlined,
+              size: 30,
             ),
           ),
+          hintText: 'Search Agency',
         ),
         const SizedBox(
           height: 11,

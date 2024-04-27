@@ -58,6 +58,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _navigateToHomeScreen({required final token}) {
+    while (Navigator.canPop(context)) {
+      Navigator.of(context).pop();
+    }
+    
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (ctx) => TabsBottom(token: token),
@@ -82,7 +86,6 @@ class _LoginScreenState extends State<LoginScreen> {
     var reqBody = {
       "username": userLoginEmail.text,
       "password": userPassword.text,
-      "locationCoordinates": ["76.10955", "17.99112"]
     };
 
     var response = await http.post(

@@ -20,6 +20,7 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:user_app/widget/buttons/custom_back_button.dart';
 import 'package:user_app/widget/buttons/custom_elevated_button.dart';
 import 'package:user_app/widget/text_widget/custom_text_widget.dart';
+import 'package:user_app/widget/textfields/textfield_widget.dart';
 
 class MapsScreen extends ConsumerStatefulWidget {
   const MapsScreen({super.key, required this.token});
@@ -78,7 +79,7 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
         isRescueMeOnGoing = jsonResponse["isAlreadyRescueMeStarted"];
 
         debugPrint("IsRescueMe ongoing: $isRescueMeOnGoing");
-        if (isRescueMeOnGoing!) {
+        if (isRescueMeOnGoing != null && isRescueMeOnGoing!) {
           await initialConnectSendLocation();
         }
 
@@ -89,14 +90,19 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
     } catch (e) {
       debugPrint("Exception occurede is getIsRescueOnGoing: ${e.toString()}");
     }
-    // return isRescueMeOnGoing!;
   }
 
   void initializeButtonValue() {
-    activeRescueMeButton = CustomTextWidget(
-      text: (isRescueMeOnGoing! ? 'Stop Rescue Me' : "Rescue Me").toUpperCase(),
-      color: Colors.white,
-    );
+    try {
+      activeRescueMeButton = CustomTextWidget(
+        text:
+            (isRescueMeOnGoing! ? 'Stop Rescue Me' : "Rescue Me").toUpperCase(),
+        color: Colors.white,
+      );
+    } catch (error) {
+      debugPrint(
+          "Exception occured in initializeButtonValue: ${error.toString()}");
+    }
   }
 
   Future<void> initialConnectSendLocation() async {
@@ -186,16 +192,22 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
           if (liveAgencies[i].agencyId == data["agencyId"]) {
             liveAgencies[i].lat = data["lat"];
             liveAgencies[i].lng = data["lng"];
-            liveAgencies[i].rescueOpsName = data[""];
+            liveAgencies[i].agencyName = data["agencyName"];
+            liveAgencies[i].agencyId = data["agencyId"];
+            liveAgencies[i].phoneNumber = data["phoneNumber"];
+            liveAgencies[i].representativeName = data["representativeName"];
+            liveAgencies[i].rescueOpsName = data["rescueOpsName"];
+            liveAgencies[i].rescueOpsDescription = data["rescueOpsDescription"];
+            liveAgencies[i].rescueTeamSize = data["rescueTeamSize"];
+            debugPrint("Got agency update location");
             isPlotted = true;
             break;
           }
         }
-        setState(() {
-          if (!isPlotted) {
-            liveAgencies.add(LiveAgencies.fromJson(data));
-          }
-        });
+        if (!isPlotted) {
+          liveAgencies.add(LiveAgencies.fromJson(data));
+        }
+        setState(() {});
       }
     });
 
@@ -234,7 +246,7 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
             position.latitude,
             position.longitude
           ];
-          if ((isRescueMeOnGoing!) && (isRescueMeOnGoing) != null) {
+          if ((isRescueMeOnGoing) != null && (isRescueMeOnGoing!)) {
             emitLocationUpdate(position.latitude, position.longitude);
           }
         }
@@ -286,6 +298,77 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
   Future<void> getPutRescueButtonOperations({
     required String apiUrl,
   }) async {
+    TextEditingController rescueReasonText = TextEditingController();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+    if (apiUrl == rescueMeUrl) {
+      await showDialog(
+        barrierDismissible: false,
+        context: context,
+        barrierColor: const Color.fromARGB(155, 0, 0, 0),
+        builder: (context) => FadeInUp(
+          duration: const Duration(milliseconds: 500),
+          child: AlertDialog(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            title: Text(
+              "Give a reason, why you need help!",
+              style: GoogleFonts.lato(
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+              ),
+            ),
+            content: Form(
+              key: formKey,
+              child: TextFieldWidget(
+                controllerText: rescueReasonText,
+                textHint: "Enter reason",
+                textfieldColor: Colors.transparent,
+                checkValidation: (value) {
+                  if (value!.trim().isEmpty) {
+                    return "Please enter valid reason!";
+                  }
+                  return null;
+                },
+              ),
+            ),
+            actions: [
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    rescueReasonText.clear();
+                    Navigator.of(context).pop(false);
+                  },
+                  child: const CustomTextWidget(
+                    text: "Skip",
+                    color: Colors.blue,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    if (formKey.currentState!.validate()) {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: const CustomTextWidget(
+                    text: "Send",
+                    color: Colors.green,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    // return;
     setState(() {
       activeRescueMeButton = const SizedBox(
         height: 25,
@@ -296,34 +379,61 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
       );
     });
 
-    var response = await http.put(
-      Uri.parse(
-        apiUrl,
-      ),
-      headers: {"Authorization": "Bearer ${widget.token}"},
-    );
+    debugPrint("Rescue reason from user: ${rescueReasonText.text}");
 
-    if (response.statusCode == 200) {
-      await getIsRescueOnGoing();
-      if (isRescueMeOnGoing!) {
-        initialConnectSendLocation();
+    var body = {
+      "lat": latLng[0],
+      "lng": latLng[1],
+      "rescueReason": rescueReasonText.text.trim(),
+    };
+
+    http.Response response;
+
+    try {
+      if (apiUrl == rescueMeUrl) {
+        response = await http.put(
+          Uri.parse(
+            apiUrl,
+          ),
+          headers: {"Authorization": "Bearer ${widget.token}"},
+          body: jsonEncode(body),
+        );
+        debugPrint("Excuted in rescueMeUrl");
       } else {
-        Navigator.of(context).pop();
+        response = await http.put(
+          Uri.parse(
+            apiUrl,
+          ),
+          headers: {"Authorization": "Bearer ${widget.token}"},
+          body: jsonEncode(body),
+        );
       }
 
-      var jsonResponse = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        await getIsRescueOnGoing();
+        if (isRescueMeOnGoing!) {
+          initialConnectSendLocation();
+        } else {
+          Navigator.of(context).pop();
+        }
 
-      String message = jsonResponse["message"];
+        var jsonResponse = jsonDecode(response.body);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            message,
-            textAlign: TextAlign.center,
+        String message = jsonResponse["message"];
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              message,
+              textAlign: TextAlign.center,
+            ),
+            behavior: SnackBarBehavior.floating,
           ),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+        );
+      }
+    } catch (e) {
+      debugPrint(
+          "Exception occured while putting rescue me user: ${e.toString()}");
     }
 
     setState(() {

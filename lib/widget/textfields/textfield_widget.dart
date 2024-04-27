@@ -9,12 +9,14 @@ class TextFieldWidget extends StatefulWidget {
     required this.controllerText,
     required this.checkValidation,
     this.textHint = '',
+    this.textfieldColor,
   });
 
   final String labelText;
   final bool obsecureIcon;
   final bool hideText;
   final String textHint;
+  final Color? textfieldColor;
   final String? Function(String?) checkValidation;
   final TextEditingController controllerText;
 
@@ -59,7 +61,8 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
             : null,
         filled: true,
         fillColor: (themeData.brightness == Brightness.light)
-            ? const Color.fromARGB(162, 232, 236, 244)
+            ? (widget.textfieldColor ??
+                const Color.fromARGB(162, 232, 236, 244))
             : Theme.of(context).colorScheme.primary,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),

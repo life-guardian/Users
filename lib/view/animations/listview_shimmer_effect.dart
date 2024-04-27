@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ListviewShimmerEffect extends StatelessWidget {
-  const ListviewShimmerEffect({super.key});
+  const ListviewShimmerEffect({super.key, this.cardHeight, s});
+  final double? cardHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class ListviewShimmerEffect extends StatelessWidget {
               ? Colors.grey.shade100
               : Theme.of(context).colorScheme.secondary,
           child: Container(
-            height: 100,
+            height: cardHeight ?? 100,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               color: Colors.white,

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:user_app/view_model/providers/user_details_provider.dart';
 import 'package:user_app/widget/dialogs/custom_logout_dialog.dart';
 import 'package:flutter/material.dart';
@@ -139,8 +140,10 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
-                        InkWell(
-                          onTap: () async {
+                        settingsTile(
+                          text: 'Update Profile Photo',
+                          leadingIcon: Icons.camera_alt_outlined,
+                          ontap: () async {
                             _pickedImage = await pickImageFromGallery();
                             if (_pickedImage != null) {
                               widget.ref
@@ -150,112 +153,41 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                               setState(() {});
                             }
                           },
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Icon(Icons.camera_alt_outlined),
-                                SizedBox(
-                                  width: 21,
-                                ),
-                                CustomTextWidget(
-                                  text: 'Update Profile Photo',
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                                Spacer(),
-                                Icon(Icons.arrow_forward_ios_rounded),
-                              ],
-                            ),
-                          ),
                         ),
                         const HorizontalDivider(),
-                        InkWell(
-                          onTap: () {
-                            // navigate to help page
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Icon(Icons.help_center_rounded),
-                                SizedBox(
-                                  width: 21,
-                                ),
-                                CustomTextWidget(
-                                  text: 'Learn More!',
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                                Spacer(),
-                                Icon(Icons.arrow_forward_ios_rounded),
-                              ],
-                            ),
-                          ),
+                        settingsTile(
+                          text: 'Learn More!',
+                          leadingIcon: Icons.help_center_rounded,
+                          ontap: () => launchWebUrl(),
                         ),
                         const HorizontalDivider(),
-                        InkWell(
-                          onTap: () {
-                            customLogoutDialog(
-                                context: context,
-                                titleText: 'Change Password?',
-                                onTap: () {},
-                                actionText2: 'Yes',
-                                contentText:
-                                    'Do you really want to reset your password');
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Icon(Icons.lock_clock_rounded),
-                                SizedBox(
-                                  width: 21,
-                                ),
-                                CustomTextWidget(
-                                  text: 'Change Password!',
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                                Spacer(),
-                                Icon(Icons.arrow_forward_ios_rounded),
-                              ],
-                            ),
-                          ),
-                        ),
+                        settingsTile(
+                            text: 'Change Password?',
+                            leadingIcon: Icons.lock_clock_rounded,
+                            ontap: () {
+                              customLogoutDialog(
+                                  context: context,
+                                  titleText: 'Change Password?',
+                                  onTap: () {},
+                                  actionText2: 'Yes',
+                                  contentText:
+                                      'Do you really want to reset your password');
+                            }),
                         const HorizontalDivider(),
-                        InkWell(
-                          onTap: () async {
+                        settingsTile(
+                          text: 'Share App',
+                          leadingIcon: Icons.share_outlined,
+                          ontap: () async {
                             String url =
                                 "https://lifeguardian-users.netlify.app/";
                             await Share.share("Lifeguardian Users app\n\n$url");
                           },
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Icon(Icons.share_outlined),
-                                SizedBox(
-                                  width: 21,
-                                ),
-                                CustomTextWidget(
-                                  text: 'Share App',
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                                Spacer(),
-                                Icon(Icons.arrow_forward_ios_rounded),
-                              ],
-                            ),
-                          ),
                         ),
                         const HorizontalDivider(thickness: 0.5),
-                        InkWell(
-                          onTap: () {
+                        settingsTile(
+                          text: 'Logout',
+                          leadingIcon: Icons.logout_rounded,
+                          ontap: () {
                             customLogoutDialog(
                               context: context,
                               titleText: 'Log out?',
@@ -265,25 +197,6 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                               onTap: widget.logoutUser,
                             );
                           },
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Icon(Icons.logout_rounded),
-                                SizedBox(
-                                  width: 21,
-                                ),
-                                CustomTextWidget(
-                                  text: 'Logout',
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                                Spacer(),
-                                Icon(Icons.arrow_forward_ios_rounded),
-                              ],
-                            ),
-                          ),
                         ),
                       ],
                     ),
@@ -304,5 +217,47 @@ class _SettingsWidgetState extends State<SettingsWidget> {
         ),
       ),
     );
+  }
+
+  Widget settingsTile({
+    required String text,
+    required IconData leadingIcon,
+    required Function() ontap,
+  }) {
+    return InkWell(
+      onTap: () => ontap(),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(
+              leadingIcon,
+            ),
+            const SizedBox(
+              width: 21,
+            ),
+            CustomTextWidget(
+              text: text,
+              fontSize: 18,
+              fontWeight: FontWeight.normal,
+            ),
+            const Spacer(),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> launchWebUrl() async {
+    final Uri url = Uri.parse(
+        'https://tejxcoder01.blogspot.com/2024/04/what-is-life-guardian-rescue-system.html');
+
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
   }
 }

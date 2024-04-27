@@ -5,6 +5,8 @@ final profileImageProvider = StateProvider<XFile?>((ref) => null);
 
 final greetingProvider = StateProvider<String>((ref) => getGreetingMessage());
 
+final isNearbyEventsLoading = StateProvider<bool>((ref) => true);
+
 String getGreetingMessage() {
   final now = DateTime.now();
   final hour = now.hour;

@@ -5,13 +5,16 @@ class Alerts {
   String? alertSeverity;
   String? agencyName;
   String? locality;
+  String? alertDescription;
 
   Alerts(
       {this.alertName,
       this.alertLocation,
       this.alertForDate,
       this.alertSeverity,
-      this.agencyName});
+      this.agencyName, 
+      this.alertDescription,
+      });
 
   Alerts.fromJson(Map<String, dynamic> json) {
     alertName = json['alertName'];
@@ -19,5 +22,6 @@ class Alerts {
     alertForDate = json['alertForDate'];
     alertSeverity = json['alertSeverity'];
     agencyName = json['agencyName'];
+    alertDescription = json['alertDescription'];
   }
 }

@@ -9,9 +9,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:user_app/helper/constants/sizes.dart';
+import 'package:user_app/view/screens/program_events_screen.dart';
+import 'package:user_app/view/screens/search_agency_screen.dart';
 import 'package:user_app/view_model/providers/user_details_provider.dart';
 import 'package:user_app/widget/custom_card_widget.dart';
-import 'package:user_app/view/screens/features_screen.dart';
+import 'package:user_app/view/screens/alerts_screen.dart';
 import 'package:user_app/view/screens/maps_screen.dart';
 import 'package:user_app/widget/text_widget/custom_text_widget.dart';
 import 'package:user_app/view/animations/transitions_animations/custom_page_transition.dart';
@@ -133,7 +135,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                 children: [
                   CustomTextWidget(
                     text: (widget.userName != "")
-                        ? '$grettingMessage! ${widget.userName}'
+                        ? '$grettingMessage! ${widget.userName.trim().split(' ')[0]}'
                         : "Loading...",
                     fontSize: 25,
                     fontWeight: FontWeight.w500,
@@ -258,49 +260,56 @@ class _HomeWidgetState extends State<HomeWidget> {
                       Expanded(
                         child: Column(
                           children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  CustomSlideTransition(
-                                    direction: AxisDirection.left,
-                                    child: MapsScreen(
-                                      token: widget.token,
+                            FadeInLeft(
+                              duration: const Duration(milliseconds: 300),
+                              delay: const Duration(milliseconds: 400),
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    CustomSlideTransition(
+                                      direction: AxisDirection.left,
+                                      child: MapsScreen(
+                                        token: widget.token,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                              child: const CustomCardWidget(
-                                width: 170,
-                                height: 120,
-                                color1: Color(0xffFFA0BC),
-                                color2: Color(0xffFF1B5E),
-                                title: 'Maps',
-                                desc: 'Nearby agencies and Help!',
+                                  );
+                                },
+                                child: const CustomCardWidget(
+                                  width: 170,
+                                  height: 120,
+                                  color1: Color(0xffFFA0BC),
+                                  color2: Color(0xffFF1B5E),
+                                  title: 'Maps',
+                                  desc: 'Nearby agencies and Help!',
+                                ),
                               ),
                             ),
                             const SizedBox(
                               height: 11,
                             ),
-                            InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  CustomSlideTransition(
-                                    direction: AxisDirection.left,
-                                    child: FeaturesScreen(
-                                      screenType: 'ProgramEvents',
-                                      token: widget.token,
-                                      username: widget.userName,
+                            FadeInUp(
+                              duration: const Duration(milliseconds: 300),
+                              delay: const Duration(milliseconds: 400),
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    CustomSlideTransition(
+                                      direction: AxisDirection.left,
+                                      child: ProgramEventsScreen(
+                                        token: widget.token,
+                                        username: widget.userName,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                              child: const CustomCardWidget(
-                                width: 170,
-                                height: 170,
-                                color1: Color(0xffA9FFEA),
-                                color2: Color(0xff00B288),
-                                title: 'Programs & Events',
-                                desc: 'Nearby',
+                                  );
+                                },
+                                child: const CustomCardWidget(
+                                  width: 170,
+                                  height: 170,
+                                  color1: Color(0xffA9FFEA),
+                                  color2: Color(0xff00B288),
+                                  title: 'Programs & Events',
+                                  desc: 'Nearby',
+                                ),
                               ),
                             ),
                           ],
@@ -312,51 +321,57 @@ class _HomeWidgetState extends State<HomeWidget> {
                       Expanded(
                         child: Column(
                           children: [
-                            InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  CustomSlideTransition(
-                                    direction: AxisDirection.left,
-                                    child: FeaturesScreen(
-                                      token: widget.token,
-                                      screenType: 'SearchAgency',
-                                      username: widget.userName,
+                            FadeInDown(
+                              duration: const Duration(milliseconds: 300),
+                              delay: const Duration(milliseconds: 400),
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    CustomSlideTransition(
+                                      direction: AxisDirection.left,
+                                      child: SearchAgencyScreen(
+                                        token: widget.token,
+                                        username: widget.userName,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                              child: const CustomCardWidget(
-                                width: 170,
-                                height: 170,
-                                color1: Color(0xffB1EEFF),
-                                color2: Color(0xff29BAE2),
-                                title: 'Search',
-                                desc: 'Agency details',
+                                  );
+                                },
+                                child: const CustomCardWidget(
+                                  width: 170,
+                                  height: 170,
+                                  color1: Color(0xffB1EEFF),
+                                  color2: Color(0xff29BAE2),
+                                  title: 'Search',
+                                  desc: 'Agency details',
+                                ),
                               ),
                             ),
                             const SizedBox(
                               height: 11,
                             ),
-                            InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  CustomSlideTransition(
-                                    direction: AxisDirection.left,
-                                    child: FeaturesScreen(
-                                      token: widget.token,
-                                      screenType: 'AlertsScreen',
-                                      username: widget.userName,
+                            FadeInRight(
+                              duration: const Duration(milliseconds: 300),
+                              delay: const Duration(milliseconds: 400),
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    CustomSlideTransition(
+                                      direction: AxisDirection.left,
+                                      child: AlertsScreen(
+                                        token: widget.token,
+                                        username: widget.userName,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                              child: const CustomCardWidget(
-                                width: 170,
-                                height: 120,
-                                color1: Color(0xffFFD29D),
-                                color2: Color(0xffFF9E2D),
-                                title: 'Alerts',
-                                desc: 'Active',
+                                  );
+                                },
+                                child: const CustomCardWidget(
+                                  width: 170,
+                                  height: 120,
+                                  color1: Color(0xffFFD29D),
+                                  color2: Color(0xffFF9E2D),
+                                  title: 'Alerts',
+                                  desc: 'Active',
+                                ),
                               ),
                             ),
                           ],

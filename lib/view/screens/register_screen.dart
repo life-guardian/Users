@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:user_app/helper/constants/api_keys.dart';
 import 'package:user_app/helper/constants/sizes.dart';
 import 'package:user_app/view/screens/login_screen.dart';
-import 'package:user_app/view/screens/register_succesful.dart';
+import 'package:user_app/view/screens/register_succesful_screen.dart';
 import 'package:user_app/widget/circular_progress_indicator/custom_circular_progress_indicator.dart';
 import 'package:user_app/widget/dialogs/custom_show_dialog.dart';
 import 'package:user_app/view/animations/transitions_animations/custom_page_transition.dart';
@@ -165,6 +165,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       prefs.setString('token', myToken);
       String? userName = jsonResponse['data']['name'];
       prefs.setString('username', userName!);
+      while (Navigator.canPop(context)) {
+        Navigator.of(context).pop();
+      }
       Navigator.of(context).pushReplacement(
         CustomSlideTransition(
           direction: AxisDirection.left,
@@ -250,19 +253,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
           const SizedBox(
             height: 31,
           ),
-          kIsMobile
-              ? registerScreenFormWidget(
-                  screenHeight: screenHeight,
-                  screenWidth: screenWidth,
-                  kIsMobile: kIsMobile,
-                )
-              : registerScreenFormWidget(
-                  screenHeight: screenHeight,
-                  screenWidth: screenWidth,
-                  kIsMobile: kIsMobile,
-                ),
+          registerScreenFormWidget(
+            screenHeight: screenHeight,
+            screenWidth: screenWidth,
+            kIsMobile: kIsMobile,
+          ),
           SizedBox(
-            height: screenHeight / 10,
+            height: screenHeight / 15,
           ),
           FadeInUp(
             delay: const Duration(milliseconds: 100),
