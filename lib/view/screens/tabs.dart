@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:user_app/helper/constants/api_keys.dart';
 import 'package:user_app/helper/constants/sizes.dart';
 import 'package:user_app/view/animations/home_screen_shimmer_effect.dart';
+import 'package:user_app/view/screens/welcome_screen.dart';
 import 'package:user_app/view_model/providers/alert_providert.dart';
 import 'package:user_app/view_model/providers/device_location_provider.dart';
 import 'package:user_app/view_model/providers/program_events_provider.dart';
@@ -153,23 +154,24 @@ class _TabsBottomState extends ConsumerState<TabsBottom> {
       },
     );
 
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.remove('token');
-      prefs.remove('username');
-      resetAllProviders();
-      while (Navigator.canPop(context)) {
-        Navigator.of(context).pop();
-      }
-
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (ctx) => const LoginScreen(),
-        ),
-      );
-    } catch (error) {
-      debugPrint("Logout user exception: ${error.toString()}");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('token');
+    prefs.remove('username');
+    resetAllProviders();
+    while (Navigator.canPop(context)) {
+      Navigator.of(context).pop();
     }
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (ctx) => const WelcomeScreen(),
+      ),
+    );
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctx) => const LoginScreen(),
+      ),
+    );
   }
 
   @override
