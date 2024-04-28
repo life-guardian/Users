@@ -16,7 +16,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '2.x'
+          flutter-version: "2.x"
 
       - name: Get packages
         run: flutter pub get
@@ -33,4 +33,3 @@ jobs:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           publish_dir: ./build/web
           # cname: your-custom-domain.com # Optional: If you have a custom domain
-
