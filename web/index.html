@@ -36,6 +36,25 @@
       // The value below is injected by flutter build, do not touch.
       const serviceWorkerVersion = null;
     </script>
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyAZanyK6f8AEhT5gEK-IFvtw_LkrVzyL6s",
+        authDomain: "lifeguardian-35500.firebaseapp.com",
+        projectId: "lifeguardian-35500",
+        storageBucket: "lifeguardian-35500.appspot.com",
+        messagingSenderId: "636422188090",
+        appId: "1:636422188090:web:026d45c2f7a4043d7b1903",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+    </script>
     <script src="main.dart.js" type="application/javascript"></script>
     <!-- This script adds the flutter initialization JS code -->
     <script src="flutter.js" defer=""></script>
